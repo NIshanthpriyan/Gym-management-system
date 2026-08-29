@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Management System — Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c14;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --primary: #0ea5e9;
+            --secondary: #a855f7;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --grad: linear-gradient(135deg, #0ea5e9, #a855f7);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        /* ===================== SLIDE LAYOUT ===================== */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+        .slide-number {
+            position: absolute;
+            top: 24px;
+            left: 40px;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .slide-label {
+            position: absolute;
+            top: 24px;
+            right: 40px;
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 2px;
+        }
+        .nav-bar {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+            background: rgba(8,12,20,0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 8px 16px;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .nav-dot.active { background: var(--primary); transform: scale(1.3); }
+
+        /* ===================== UTILITY ===================== */
+        .gradient-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+        .badge { background: rgba(14,165,233,0.15); color: var(--primary); border: 1px solid rgba(14,165,233,0.3); border-radius: 6px; padding: 4px 12px; font-size: 13px; font-weight: 600; }
+        .badge-purple { background: rgba(168,85,247,0.15); color: var(--secondary); border-color: rgba(168,85,247,0.3); }
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--green); border-color: rgba(16,185,129,0.3); }
+        .grid { display: grid; gap: 20px; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* Background particles */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        /* ===================== SLIDE 1: TITLE ===================== */
+        #slide-1 { background: radial-gradient(ellipse at 30% 30%, rgba(14,165,233,0.08) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(168,85,247,0.08) 0%, transparent 60%); }
+        #slide-1 .main-title { font-family: 'Outfit', sans-serif; font-size: clamp(3rem, 8vw, 7rem); font-weight: 800; line-height: 1; letter-spacing: -3px; }
+        #slide-1 .subtitle { font-size: 1.2rem; color: var(--muted); margin: 20px 0 40px; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+        /* ===================== SLIDE 2: TECH STACK ===================== */
+        .tech-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .tech-card { text-align: center; }
+        .tech-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+        .tech-card p { font-size: 12px; color: var(--muted); }
+
+        /* ===================== SLIDE 3: ARCHITECTURE ===================== */
+        .arch-layer { border-left: 3px solid; padding: 16px 20px; border-radius: 0 12px 12px 0; margin-bottom: 12px; transition: all 0.3s; }
+        .arch-layer:hover { transform: translateX(6px); }
+        .arch-layer.l1 { border-color: var(--primary); background: rgba(14,165,233,0.05); }
+        .arch-layer.l2 { border-color: var(--secondary); background: rgba(168,85,247,0.05); }
+        .arch-layer.l3 { border-color: var(--green); background: rgba(16,185,129,0.05); }
+        .arch-layer.l4 { border-color: var(--yellow); background: rgba(245,158,11,0.05); }
+        .arch-layer.l5 { border-color: var(--red); background: rgba(239,68,68,0.05); }
+        .arch-layer h3 { font-size: 1rem; font-weight: 700; }
+        .arch-layer p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+        /* ===================== SLIDE 4: FEATURES ===================== */
+        .feature-item { display: flex; gap: 16px; align-items: flex-start; padding: 16px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); transition: all 0.3s; }
+        .feature-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .feature-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+        .fi-blue { background: rgba(14,165,233,0.15); color: var(--primary); }
+        .fi-purple { background: rgba(168,85,247,0.15); color: var(--secondary); }
+        .fi-green { background: rgba(16,185,129,0.15); color: var(--green); }
+
+        /* ===================== SLIDE 5: SECURITY ===================== */
+        .security-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .flow-box { padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; }
+        .flow-arrow { color: var(--muted); font-size: 20px; }
+
+        /* ===================== SLIDE 6: DB SCHEMA ===================== */
+        .table-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .table-box .table-header { padding: 10px 16px; font-weight: 700; font-size: 14px; }
+        .table-box .table-row { padding: 8px 16px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+        .table-box .table-row span { color: var(--primary); font-weight: 500; }
+
+        /* ===================== SLIDE 7: METRICS ===================== */
+        .metric-big { text-align: center; }
+        .metric-big .num { font-family: 'Outfit', sans-serif; font-size: 3.5rem; font-weight: 800; }
+        .metric-big .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+        /* ===================== SLIDE 8: THANK YOU ===================== */
+        #slide-8 { background: radial-gradient(ellipse at 50% 50%, rgba(14,165,233,0.1) 0%, transparent 60%); }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .anim { opacity: 0; animation: fadeInUp 0.6s ease forwards; }
+        .d1 { animation-delay: 0.1s; }
+        .d2 { animation-delay: 0.2s; }
+        .d3 { animation-delay: 0.3s; }
+        .d4 { animation-delay: 0.4s; }
+        .d5 { animation-delay: 0.5s; }
+
+        .content-wrap { max-width: 1100px; width: 100%; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .security-flow { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===================== SLIDE 1: TITLE PAGE ===================== -->
+<section class="slide" id="slide-1">
+    <span class="slide-number">01 / 08</span>
+    <span class="slide-label">Gym Management System</span>
+    <div class="content-wrap" style="text-align:center;">
+        <div class="anim d1" style="margin-bottom:24px;">
+            <span style="font-size:4rem;">🏋️</span>
+        </div>
+        <h1 class="main-title gradient-text anim d2">Gym<br>Management<br>System</h1>
+        <p class="subtitle anim d3">A production-quality full-stack web application for modern gym operations</p>
+        <div class="tag-row anim d4">
+            <span class="badge">Java 21</span>
+            <span class="badge">Spring Boot 3.x</span>
+            <span class="badge badge-purple">Spring Security + JWT</span>
+            <span class="badge badge-green">MySQL 8</span>
+            <span class="badge">Bootstrap 5</span>
+            <span class="badge badge-purple">Chart.js</span>
+            <span class="badge badge-green">REST API</span>
+        </div>
+        <p class="anim d5" style="margin-top:40px; color:var(--muted); font-size:14px;">
+            <i class="fas fa-arrow-down me-2"></i>Scroll to navigate through the presentation
+        </p>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 2: TECHNOLOGY STACK ===================== -->
+<section class="slide" id="slide-2">
+    <span class="slide-number">02 / 08</span>
+    <span class="slide-label">Technology Stack</span>
+    <div class="content-wrap">
+        <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">Technology Stack</h2>
+        <p class="anim d1" style="color:var(--muted); margin-bottom:40px;">Enterprise-grade technologies for reliability, scalability, and developer experience</p>
+        <div class="grid grid-4 anim d2">
+            <div class="card tech-card">
+                <div class="tech-icon">☕</div>
+                <h3>Java 21</h3>
+                <p>Latest LTS with virtual threads</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">🍃</div>
+                <h3>Spring Boot 3.3</h3>
+                <p>Auto-config, starters, production-ready</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">🔐</div>
+                <h3>Spring Security</h3>
+                <p>JWT stateless auth, RBAC</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">🐬</div>
+                <h3>MySQL 8</h3>
+                <p>Relational DB with JPA/Hibernate</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">🎨</div>
+                <h3>Bootstrap 5</h3>
+                <p>Responsive, modern UI</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">📊</div>
+                <h3>Chart.js</h3>
+                <p>Interactive analytics graphs</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">📄</div>
+                <h3>OpenPDF + POI</h3>
+                <p>PDF receipt & Excel reports</p>
+            </div>
+            <div class="card tech-card">
+                <div class="tech-icon">🧪</div>
+                <h3>JUnit 5 + Mockito</h3>
+                <p>Unit & integration testing</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 3: ARCHITECTURE ===================== -->
+<section class="slide" id="slide-3">
+    <span class="slide-number">03 / 08</span>
+    <span class="slide-label">Architecture</span>
+    <div class="content-wrap">
+        <div class="grid grid-2" style="gap:40px; align-items:start;">
+            <div>
+                <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">System Architecture</h2>
+                <p class="anim d1" style="color:var(--muted); margin-bottom:32px;">Clean separation of concerns across well-defined layers</p>
+                <div class="anim d2 arch-layer l1">
+                    <h3>🖥️ Presentation Layer</h3>
+                    <p>HTML5, Bootstrap 5, JavaScript (auth.js, Chart.js)</p>
+                </div>
+                <div class="anim d2 arch-layer l2">
+                    <h3>🔐 Security Layer</h3>
+                    <p>JwtAuthenticationFilter → SecurityConfig → RBAC</p>
+                </div>
+                <div class="anim d3 arch-layer l3">
+                    <h3>🎮 Controller Layer</h3>
+                    <p>REST endpoints, request validation, response mapping</p>
+                </div>
+                <div class="anim d3 arch-layer l4">
+                    <h3>⚙️ Service Layer</h3>
+                    <p>Business logic, transactions, DTO transformations</p>
+                </div>
+                <div class="anim d4 arch-layer l5">
+                    <h3>🗄️ Repository Layer</h3>
+                    <p>Spring Data JPA, Hibernate ORM → MySQL 8</p>
+                </div>
+            </div>
+            <div>
+                <h3 class="anim d2" style="margin-bottom:20px; font-size:1.1rem;">Authentication Flow</h3>
+                <div class="security-flow anim d3" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                    <div class="flow-box" style="background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.3); width:100%;">
+                        🌐 Browser → POST /api/auth/login
+                    </div>
+                    <div style="text-align:center; width:100%; color:var(--muted);">↓</div>
+                    <div class="flow-box" style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); width:100%;">
+                        🔐 AuthenticationManager validates credentials
+                    </div>
+                    <div style="text-align:center; width:100%; color:var(--muted);">↓</div>
+                    <div class="flow-box" style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); width:100%;">
+                        🎫 JwtTokenProvider generates signed JWT
+                    </div>
+                    <div style="text-align:center; width:100%; color:var(--muted);">↓</div>
+                    <div class="flow-box" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); width:100%;">
+                        💾 Token stored in localStorage
+                    </div>
+                    <div style="text-align:center; width:100%; color:var(--muted);">↓</div>
+                    <div class="flow-box" style="background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.3); width:100%;">
+                        🚀 Subsequent requests: Authorization: Bearer &lt;token&gt;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 4: FEATURES ===================== -->
+<section class="slide" id="slide-4">
+    <span class="slide-number">04 / 08</span>
+    <span class="slide-label">Features</span>
+    <div class="content-wrap">
+        <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">Complete Feature Set</h2>
+        <p class="anim d1" style="color:var(--muted); margin-bottom:32px;">Three dedicated role-based portals, each with tailored functionality</p>
+        <div class="grid grid-3 anim d2">
+            <div>
+                <p style="font-size:12px; letter-spacing:2px; color:var(--primary); font-weight:700; margin-bottom:16px;">ADMIN PORTAL</p>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-blue"><i class="fas fa-chart-line"></i></div>
+                    <div><strong>Live Dashboard</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Real-time stats & Chart.js graphs</p></div>
+                </div>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-blue"><i class="fas fa-users"></i></div>
+                    <div><strong>Member Management</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Add, edit, activate, assign plans</p></div>
+                </div>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-blue"><i class="fas fa-dollar-sign"></i></div>
+                    <div><strong>Payments + PDF Receipts</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Record and download receipts</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon fi-blue"><i class="fas fa-file-export"></i></div>
+                    <div><strong>PDF & Excel Reports</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Monthly export via OpenPDF + POI</p></div>
+                </div>
+            </div>
+            <div>
+                <p style="font-size:12px; letter-spacing:2px; color:var(--secondary); font-weight:700; margin-bottom:16px;">TRAINER PORTAL</p>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-purple"><i class="fas fa-th-large"></i></div>
+                    <div><strong>Trainer Dashboard</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Overview of assigned members</p></div>
+                </div>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-purple"><i class="fas fa-users"></i></div>
+                    <div><strong>My Members Grid</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Cards with expiry warnings</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon fi-purple"><i class="fas fa-dumbbell"></i></div>
+                    <div><strong>Workout Plan Builder</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Multi-day exercise schedules</p></div>
+                </div>
+            </div>
+            <div>
+                <p style="font-size:12px; letter-spacing:2px; color:var(--green); font-weight:700; margin-bottom:16px;">MEMBER PORTAL</p>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-green"><i class="fas fa-running"></i></div>
+                    <div><strong>Workout Viewer</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Daily exercise breakdown</p></div>
+                </div>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-green"><i class="fas fa-calculator"></i></div>
+                    <div><strong>Live BMI Calculator</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Progress chart over time</p></div>
+                </div>
+                <div class="feature-item mb-2">
+                    <div class="feature-icon fi-green"><i class="fas fa-calendar-check"></i></div>
+                    <div><strong>Attendance History</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Monthly chart + log</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon fi-green"><i class="fas fa-receipt"></i></div>
+                    <div><strong>Payment History</strong><p style="font-size:12px; color:var(--muted); margin-top:4px;">Transactions + PDF receipts</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 5: SECURITY ===================== -->
+<section class="slide" id="slide-5">
+    <span class="slide-number">05 / 08</span>
+    <span class="slide-label">Security</span>
+    <div class="content-wrap">
+        <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">Security Architecture</h2>
+        <p class="anim d1" style="color:var(--muted); margin-bottom:40px;">Enterprise-grade security with JWT stateless authentication and role-based access control</p>
+        <div class="grid grid-3 anim d2">
+            <div class="card" style="border-color:rgba(14,165,233,0.3);">
+                <div style="font-size:2rem; margin-bottom:16px;">🎫</div>
+                <h3 style="margin-bottom:8px;">JWT Tokens</h3>
+                <p style="color:var(--muted); font-size:14px;">Signed tokens with 24h expiry. Validated on every request by <code style="color:var(--primary);">JwtAuthenticationFilter</code>.</p>
+            </div>
+            <div class="card" style="border-color:rgba(168,85,247,0.3);">
+                <div style="font-size:2rem; margin-bottom:16px;">🔑</div>
+                <h3 style="margin-bottom:8px;">BCrypt Passwords</h3>
+                <p style="color:var(--muted); font-size:14px;">All passwords are hashed with BCrypt (strength=10). Plain text passwords never stored.</p>
+            </div>
+            <div class="card" style="border-color:rgba(16,185,129,0.3);">
+                <div style="font-size:2rem; margin-bottom:16px;">👤</div>
+                <h3 style="margin-bottom:8px;">Role-Based Access</h3>
+                <p style="color:var(--muted); font-size:14px;">Three roles: <code style="color:var(--green);">ROLE_ADMIN</code>, <code style="color:var(--green);">ROLE_TRAINER</code>, <code style="color:var(--green);">ROLE_MEMBER</code>. Each with segregated endpoints.</p>
+            </div>
+        </div>
+        <div class="card anim d3" style="margin-top:20px;">
+            <h3 style="margin-bottom:16px; font-size:1rem;">Protected Endpoint Matrix</h3>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <th style="padding:8px 12px; text-align:left; color:var(--muted);">Endpoint Pattern</th>
+                        <th style="padding:8px 12px; text-align:center; color:var(--muted);">ADMIN</th>
+                        <th style="padding:8px 12px; text-align:center; color:var(--muted);">TRAINER</th>
+                        <th style="padding:8px 12px; text-align:center; color:var(--muted);">MEMBER</th>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 12px;"><code>/api/auth/**</code></td>
+                        <td style="text-align:center; color:var(--green);">✅ Public</td>
+                        <td style="text-align:center; color:var(--green);">✅ Public</td>
+                        <td style="text-align:center; color:var(--green);">✅ Public</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 12px;"><code>/api/members/**</code></td>
+                        <td style="text-align:center; color:var(--green);">✅</td>
+                        <td style="text-align:center; color:var(--red);">❌</td>
+                        <td style="text-align:center; color:var(--yellow);">⚠️ Own only</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:8px 12px;"><code>/api/trainers/**</code></td>
+                        <td style="text-align:center; color:var(--green);">✅</td>
+                        <td style="text-align:center; color:var(--yellow);">⚠️ Own only</td>
+                        <td style="text-align:center; color:var(--red);">❌</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px;"><code>/api/reports/**</code></td>
+                        <td style="text-align:center; color:var(--green);">✅</td>
+                        <td style="text-align:center; color:var(--red);">❌</td>
+                        <td style="text-align:center; color:var(--red);">❌</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 6: DATABASE ===================== -->
+<section class="slide" id="slide-6">
+    <span class="slide-number">06 / 08</span>
+    <span class="slide-label">Database Design</span>
+    <div class="content-wrap">
+        <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">Database Schema</h2>
+        <p class="anim d1" style="color:var(--muted); margin-bottom:32px;">11 interconnected tables with referential integrity and unique constraints</p>
+        <div class="grid grid-3 anim d2">
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(14,165,233,0.1);">📋 users</div>
+                <div class="table-row">id, username, email<span>PK</span></div>
+                <div class="table-row">password (BCrypt)<span>—</span></div>
+                <div class="table-row">full_name, phone, status<span>—</span></div>
+            </div>
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(168,85,247,0.1);">👤 members</div>
+                <div class="table-row">id, user_id<span>FK → users</span></div>
+                <div class="table-row">plan_id<span>FK → plans</span></div>
+                <div class="table-row">trainer_id, expiry_date<span>FK → trainers</span></div>
+            </div>
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(16,185,129,0.1);">🏋️ trainers</div>
+                <div class="table-row">id, user_id<span>FK → users</span></div>
+                <div class="table-row">specialization<span>—</span></div>
+                <div class="table-row">experience_years, salary<span>—</span></div>
+            </div>
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(245,158,11,0.1);">💳 payments</div>
+                <div class="table-row">id, member_id<span>FK → members</span></div>
+                <div class="table-row">plan_id, amount<span>FK → plans</span></div>
+                <div class="table-row">transaction_id, method<span>UNIQUE</span></div>
+            </div>
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(239,68,68,0.1);">📅 attendance</div>
+                <div class="table-row">id, member_id<span>FK → members</span></div>
+                <div class="table-row">date, check_in<span>UNIQUE(member, date)</span></div>
+                <div class="table-row">check_out, status<span>—</span></div>
+            </div>
+            <div class="table-box">
+                <div class="table-header" style="background:rgba(14,165,233,0.1);">📊 progress</div>
+                <div class="table-row">id, member_id<span>FK → members</span></div>
+                <div class="table-row">weight, height, bmi<span>Calculated</span></div>
+                <div class="table-row">body_fat, recorded_date<span>—</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 7: METRICS ===================== -->
+<section class="slide" id="slide-7">
+    <span class="slide-number">07 / 08</span>
+    <span class="slide-label">Project Metrics</span>
+    <div class="content-wrap">
+        <h2 class="gradient-text anim d1" style="font-family:'Outfit',sans-serif; font-size:2.5rem; font-weight:800; margin-bottom:8px;">Project by the Numbers</h2>
+        <p class="anim d1" style="color:var(--muted); margin-bottom:40px;">A comprehensive, production-ready system measured end-to-end</p>
+        <div class="grid grid-4 anim d2" style="margin-bottom:32px;">
+            <div class="card metric-big">
+                <div class="num gradient-text">55+</div>
+                <div class="label">Java Source Files</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num gradient-text">40+</div>
+                <div class="label">REST API Endpoints</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num gradient-text">15</div>
+                <div class="label">HTML Pages</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num gradient-text">11</div>
+                <div class="label">Database Tables</div>
+            </div>
+        </div>
+        <div class="grid grid-4 anim d3">
+            <div class="card metric-big">
+                <div class="num" style="color:var(--green);">3</div>
+                <div class="label">Role-Based Portals</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num" style="color:var(--secondary);">10</div>
+                <div class="label">Unit Tests</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num" style="color:var(--yellow);">5</div>
+                <div class="label">Integration Tests</div>
+            </div>
+            <div class="card metric-big">
+                <div class="num" style="color:var(--primary);">24h</div>
+                <div class="label">JWT Token Validity</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 8: THANK YOU ===================== -->
+<section class="slide" id="slide-8">
+    <span class="slide-number">08 / 08</span>
+    <div class="content-wrap" style="text-align:center;">
+        <div class="anim d1" style="font-size:5rem; margin-bottom:24px;">🚀</div>
+        <h2 class="gradient-text anim d2" style="font-family:'Outfit',sans-serif; font-size:clamp(2rem,6vw,5rem); font-weight:800; margin-bottom:16px;">Thank You!</h2>
+        <p class="anim d3" style="color:var(--muted); font-size:1.1rem; margin-bottom:40px; max-width:600px; margin-left:auto; margin-right:auto;">
+            A complete, production-quality Gym Management System built with Java 21, Spring Boot 3.x, Spring Security (JWT), MySQL, and Bootstrap 5.
+        </p>
+        <div class="grid grid-3 anim d4" style="max-width:700px; margin:0 auto 40px;">
+            <div class="card" style="text-align:center; padding:20px 12px;">
+                <div style="font-size:1.5rem; margin-bottom:8px;">✅</div>
+                <p style="font-size:13px; font-weight:600;">Production-ready code with clean architecture</p>
+            </div>
+            <div class="card" style="text-align:center; padding:20px 12px;">
+                <div style="font-size:1.5rem; margin-bottom:8px;">🔐</div>
+                <p style="font-size:13px; font-weight:600;">Secure JWT + BCrypt authentication</p>
+            </div>
+            <div class="card" style="text-align:center; padding:20px 12px;">
+                <div style="font-size:1.5rem; margin-bottom:8px;">🧪</div>
+                <p style="font-size:13px; font-weight:600;">Unit & Integration test coverage</p>
+            </div>
+        </div>
+        <p class="anim d5" style="color:var(--muted); font-size:13px;">
+            Run with: <code style="color:var(--primary);">mvn spring-boot:run</code> &nbsp;|&nbsp; Access at: <code style="color:var(--primary);">http://localhost:8080</code>
+        </p>
+    </div>
+</section>
+
+<!-- Navigation Dots -->
+<nav class="nav-bar" id="nav-dots">
+    <button class="nav-dot active" onclick="scrollToSlide(1)" title="Title"></button>
+    <button class="nav-dot" onclick="scrollToSlide(2)" title="Tech Stack"></button>
+    <button class="nav-dot" onclick="scrollToSlide(3)" title="Architecture"></button>
+    <button class="nav-dot" onclick="scrollToSlide(4)" title="Features"></button>
+    <button class="nav-dot" onclick="scrollToSlide(5)" title="Security"></button>
+    <button class="nav-dot" onclick="scrollToSlide(6)" title="Database"></button>
+    <button class="nav-dot" onclick="scrollToSlide(7)" title="Metrics"></button>
+    <button class="nav-dot" onclick="scrollToSlide(8)" title="Thank You"></button>
+</nav>
+
+<script>
+    function scrollToSlide(n) {
+        document.getElementById(`slide-${n}`).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    const dots = document.querySelectorAll('.nav-dot');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                const n = parseInt(id.replace('slide-', '')) - 1;
+                dots.forEach(d => d.classList.remove('active'));
+                dots[n]?.classList.add('active');
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.slide').forEach(s => observer.observe(s));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        const active = document.querySelector('.nav-dot.active');
+        const idx = Array.from(dots).indexOf(active);
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { scrollToSlide(Math.min(idx + 2, 8)); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { scrollToSlide(Math.max(idx, 1)); }
+    });
+</script>
+</body>
+</html>

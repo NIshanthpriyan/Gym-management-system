@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Export Center - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/admin/members.html"><i class="fas fa-users"></i>Members</a></li>
+            <li><a href="/admin/trainers.html"><i class="fas fa-user-tie"></i>Trainers</a></li>
+            <li><a href="/admin/plans.html"><i class="fas fa-gem"></i>Plans</a></li>
+            <li><a href="/admin/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/admin/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li class="active"><a href="/admin/reports.html"><i class="fas fa-file-invoice-dollar"></i>Reports</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">Reports & Exporter Dashboard</h4>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small">Signed in as:</span>
+                <span id="nav-profile-username" class="fw-bold">Admin</span>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            
+            <div class="row g-4">
+                
+                <!-- Report Card: Members -->
+                <div class="col-md-6 col-xl-4 animate-fade-in">
+                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-blue-accent metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Member Directory</h5>
+                                <span class="small text-secondary">Complete register roster</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small flex-grow-1">Contains active, inactive, and expired member lists, emergency numbers, plan durations, and trainers assigned.</p>
+                        <div class="d-flex gap-2 mt-3 pt-3 border-top border-secondary">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('csv', 'members')"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('excel', 'members')"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button class="btn btn-sm btn-primary btn-sm flex-grow-1" onclick="exportReport('pdf', 'members')"><i class="fas fa-file-pdf me-1"></i>PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Card: Trainers -->
+                <div class="col-md-6 col-xl-4 animate-fade-in" style="animation-delay: 0.05s;">
+                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-purple-accent metric-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Trainer Profiles</h5>
+                                <span class="small text-secondary">Certifications and specialization</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small flex-grow-1">Contains complete list of trainers, payroll salaries, years of experience, specialized programs, and active logs status.</p>
+                        <div class="d-flex gap-2 mt-3 pt-3 border-top border-secondary">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('csv', 'trainers')"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('excel', 'trainers')"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button class="btn btn-sm btn-primary btn-sm flex-grow-1" onclick="exportReport('pdf', 'trainers')"><i class="fas fa-file-pdf me-1"></i>PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Card: Payments -->
+                <div class="col-md-6 col-xl-4 animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-green-accent metric-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Payment Ledger</h5>
+                                <span class="small text-secondary">Receipt and transaction ledger</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small flex-grow-1">Audited listing of transaction keys, methods, payment dates, member profiles, plans, and amounts.</p>
+                        <div class="d-flex gap-2 mt-3 pt-3 border-top border-secondary">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('csv', 'payments')"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('excel', 'payments')"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button class="btn btn-sm btn-primary btn-sm flex-grow-1" onclick="exportReport('pdf', 'payments')"><i class="fas fa-file-pdf me-1"></i>PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Card: Attendance -->
+                <div class="col-md-6 col-xl-4 animate-fade-in" style="animation-delay: 0.15s;">
+                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-teal-accent metric-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Check-in Logs</h5>
+                                <span class="small text-secondary">Attendance ratios</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small flex-grow-1">Contains member and trainer check-in/out timestamps, date records, and present status logs.</p>
+                        <div class="d-flex gap-2 mt-3 pt-3 border-top border-secondary">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('csv', 'attendance')"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('excel', 'attendance')"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button class="btn btn-sm btn-primary btn-sm flex-grow-1" onclick="exportReport('pdf', 'attendance')"><i class="fas fa-file-pdf me-1"></i>PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Card: Revenue -->
+                <div class="col-md-6 col-xl-4 animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="bg-danger text-danger metric-icon" style="background: rgba(239, 68, 68, 0.15)">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold m-0">Revenue Analytics</h5>
+                                <span class="small text-secondary">Yield metrics and estimations</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small flex-grow-1">Summary yields of package tiers, active member subscription counts, plan weights, and monthly projections.</p>
+                        <div class="d-flex gap-2 mt-3 pt-3 border-top border-secondary">
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('csv', 'revenue')"><i class="fas fa-file-csv me-1"></i>CSV</button>
+                            <button class="btn btn-sm btn-outline-secondary flex-grow-1" onclick="exportReport('excel', 'revenue')"><i class="fas fa-file-excel me-1"></i>Excel</button>
+                            <button class="btn btn-sm btn-primary btn-sm flex-grow-1" onclick="exportReport('pdf', 'revenue')"><i class="fas fa-file-pdf me-1"></i>PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_ADMIN');
+        loadNavbarProfile();
+
+        // Download trigger mapping JWT tokens to authorization headers
+        function exportReport(format, type) {
+            const token = getToken();
+            const url = `/api/admin/reports/export/${format}/${type}`;
+            
+            // To fetch a file using headers we can download it as a Blob
+            showToast(`Generating and downloading ${type} ${format.toUpperCase()} report...`, 'success');
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Failed to generate report file.');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${type}_report_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : format}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('Failed to download report file.', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

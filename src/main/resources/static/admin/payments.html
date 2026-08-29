@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Ledger - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/admin/members.html"><i class="fas fa-users"></i>Members</a></li>
+            <li><a href="/admin/trainers.html"><i class="fas fa-user-tie"></i>Trainers</a></li>
+            <li><a href="/admin/plans.html"><i class="fas fa-gem"></i>Plans</a></li>
+            <li><a href="/admin/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li class="active"><a href="/admin/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/admin/reports.html"><i class="fas fa-file-invoice-dollar"></i>Reports</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">Payment Transactions Ledger</h4>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                    <i class="fas fa-plus me-2"></i>Receive Payment
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body">
+            
+            <!-- Payment Transactions Table -->
+            <div class="glass-panel p-4">
+                <div class="table-responsive">
+                    <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Member Name</th>
+                                <th>Membership Plan</th>
+                                <th>Amount</th>
+                                <th>Payment Date</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th class="text-end">Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body">
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-secondary">Loading payment ledger...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RECEIVE PAYMENT MODAL -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-credit-card me-2 text-accent"></i>Log New Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="new-payment-form">
+                    <div class="modal-body p-4 text-start">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-secondary small fw-bold">Select Member</label>
+                                <select class="form-select" id="pay-member-select" required>
+                                    <option value="">Choose member...</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small fw-bold">Membership Plan</label>
+                                <select class="form-select" id="pay-plan-select" required>
+                                    <option value="">Choose plan...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">Charged Price (₹)</label>
+                                <input type="number" step="0.01" class="form-control" id="pay-amount" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary small fw-bold">Payment Method</label>
+                                <select class="form-select" id="pay-method" required>
+                                    <option value="CASH">Cash</option>
+                                    <option value="CREDIT_CARD">Credit Card</option>
+                                    <option value="DEBIT_CARD">Debit Card</option>
+                                    <option value="UPI">UPI / GPay</option>
+                                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-secondary small fw-bold">Transaction Reference ID (Optional)</label>
+                                <input type="text" class="form-control" id="pay-transaction-id" placeholder="e.g. TXN-1082910">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Process Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_ADMIN');
+        loadNavbarProfile();
+
+        let plansData = [];
+
+        async function loadFormData() {
+            try {
+                // Load Members
+                const membersRes = await fetchWithAuth('/admin/members?size=100');
+                const membersData = await membersRes.json();
+                const memSelect = document.getElementById('pay-member-select');
+                memSelect.innerHTML = '<option value="">Choose member...</option>' + 
+                    membersData.content.map(m => `<option value="${m.id}">${m.fullName} (ID: ${m.id})</option>`).join('');
+
+                // Load Plans
+                const plansRes = await fetchWithAuth('/plans');
+                plansData = await plansRes.json();
+                const planSelect = document.getElementById('pay-plan-select');
+                planSelect.innerHTML = '<option value="">Choose plan...</option>' + 
+                    plansData.map(p => `<option value="${p.id}">${p.name} (₹${p.price.toFixed(2)})</option>`).join('');
+
+                // Auto populate price on plan select
+                planSelect.addEventListener('change', () => {
+                    const planId = planSelect.value;
+                    if (planId) {
+                        const selectedPlan = plansData.find(p => p.id == planId);
+                        if (selectedPlan) {
+                            document.getElementById('pay-amount').value = selectedPlan.price;
+                        }
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadPayments() {
+            const tableBody = document.getElementById('payments-table-body');
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-secondary"><i class="fas fa-spinner fa-spin me-2"></i>Loading transactions...</td></tr>`;
+
+            try {
+                const response = await fetchWithAuth('/payments');
+                if (!response) return;
+
+                const payments = await response.json();
+
+                if (payments.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-secondary">No transactions logged.</td></tr>`;
+                    return;
+                }
+
+                // Sort descending by date
+                payments.sort((a,b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+
+                tableBody.innerHTML = payments.map(p => {
+                    const dateFormatted = new Date(p.paymentDate).toLocaleString();
+                    return `
+                        <tr>
+                            <td><code class="text-accent">${p.transactionId}</code></td>
+                            <td class="fw-bold">${p.memberName}</td>
+                            <td>${p.membershipPlanName}</td>
+                            <td>₹${p.amount.toFixed(2)}</td>
+                            <td>${dateFormatted}</td>
+                            <td><span class="badge bg-secondary">${p.paymentMethod}</span></td>
+                            <td><span class="badge bg-success">${p.status}</span></td>
+                            <td class="text-end">
+                                <a href="/api/payments/receipt/${p.id}" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-print me-1"></i>PDF
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-danger">Failed to fetch payments ledger.</td></tr>`;
+            }
+        }
+
+        // New payment submission
+        document.getElementById('new-payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                memberId: parseInt(document.getElementById('pay-member-select').value),
+                membershipPlanId: parseInt(document.getElementById('pay-plan-select').value),
+                amount: parseFloat(document.getElementById('pay-amount').value),
+                paymentMethod: document.getElementById('pay-method').value,
+                transactionId: document.getElementById('pay-transaction-id').value
+            };
+
+            try {
+                const response = await fetchWithAuth('/payments', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                if (response && response.ok) {
+                    showToast('Payment processed and logged!', 'success');
+                    e.target.reset();
+                    bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+                    loadPayments();
+                } else {
+                    showToast('Processing failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Server error.', 'error');
+            }
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFormData();
+            loadPayments();
+        });
+    </script>
+</body>
+</html>
