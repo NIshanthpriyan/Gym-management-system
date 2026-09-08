@@ -165,7 +165,36 @@ CREATE TABLE IF NOT EXISTS `progress` (
   `hips` DECIMAL(5,2) DEFAULT NULL,
   `bmi` DECIMAL(5,2) DEFAULT NULL,
   `notes` TEXT DEFAULT NULL,
-  FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE CASCADE
+-- -----------------------------------------------------
+-- Table `gym_classes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gym_classes` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `class_name` VARCHAR(100) NOT NULL,
+  `trainer_id` BIGINT DEFAULT NULL,
+  `schedule_time` DATETIME NOT NULL,
+  `room` VARCHAR(50) DEFAULT 'Studio A',
+  `capacity` INT NOT NULL DEFAULT 20,
+  `booked_count` INT NOT NULL DEFAULT 0,
+  `description` TEXT DEFAULT NULL,
+  `status` VARCHAR(20) DEFAULT 'SCHEDULED',
+  FOREIGN KEY (`trainer_id`) REFERENCES `trainers` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `chat_history`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `chat_history` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` BIGINT NOT NULL,
+  `user_message` VARCHAR(2000) NOT NULL,
+  `bot_response` VARCHAR(5000) NOT NULL,
+  `intent_category` VARCHAR(50) DEFAULT 'GENERAL',
+  `session_id` VARCHAR(100) DEFAULT NULL,
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_chat_user (user_id),
+  INDEX idx_chat_timestamp (timestamp),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
@@ -245,3 +274,17 @@ INSERT INTO `progress` (`member_id`, `recorded_date`, `weight`, `height`, `body_
 (1, '2026-07-01', 70.5, 1.68, 28.5, 23.2, 92.0, 80.0, 98.0, 24.98, 'Initial assessment'),
 (1, '2026-07-15', 69.2, 1.68, 27.2, 23.6, 91.0, 78.5, 96.5, 24.52, 'Weight loss observed, muscle mass increased')
 ON DUPLICATE KEY UPDATE notes=VALUES(notes);
+
+-- Insert Gym Classes
+INSERT INTO `gym_classes` (`id`, `class_name`, `trainer_id`, `schedule_time`, `room`, `capacity`, `booked_count`, `description`, `status`) VALUES
+(1, 'Morning Power Yoga', 1, '2026-09-10 07:00:00', 'Studio A', 20, 5, 'Relaxing and energizing flexibility flow', 'SCHEDULED'),
+(2, 'High-Intensity Zumba Dance', 1, '2026-09-11 18:30:00', 'Studio B', 25, 12, 'Cardio dance party to torch calories', 'SCHEDULED'),
+(3, 'CrossFit & Conditioning', 1, '2026-09-12 17:00:00', 'Main Gym Floor', 15, 8, 'Full-body functional strength circuits', 'SCHEDULED')
+ON DUPLICATE KEY UPDATE class_name=VALUES(class_name);
+
+-- Insert Sample Chat History
+INSERT INTO `chat_history` (`id`, `user_id`, `user_message`, `bot_response`, `intent_category`, `session_id`, `timestamp`) VALUES
+(1, 3, 'Hi! What is my membership status and when does it expire?', '📋 **Your Membership Overview:**\n\n• **Member Name:** Alice Smith\n• **Current Plan:** Monthly Basic\n• **Status:** `ACTIVE`\n• **Expiry Date:** Aug 01, 2026\n• **Time Remaining:** 23 days remaining.\n\n✅ *Your membership is active and in good standing.*', 'ACCOUNT_MEMBERSHIP', 'session-alice_smith', '2026-07-15 09:35:00'),
+(2, 3, 'Suggest a high-protein post-workout meal for vegetarian diet', '🌱 **Optimal Post-Workout Vegetarian Fuel:**\n\n• **Meal Idea 1:** 200g Greek Yogurt with banana, walnuts, and 1 scoop of protein powder (~32g protein).\n• **Meal Idea 2:** Paneer Bhurji / Sautéed Tofu (150g) with 2 whole wheat rotis and mint salad (~25g protein).\n• **Hydration:** Rehydrate with 500ml of electrolytes or coconut water.', 'NUTRITION_DIET', 'session-alice_smith', '2026-07-15 09:36:00')
+ON DUPLICATE KEY UPDATE user_message=VALUES(user_message);
+

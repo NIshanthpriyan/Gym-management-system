@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Gym Assistant - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot-widget.css">
+    <style>
+        .chat-main-card {
+            height: calc(100vh - 150px);
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .category-pill {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .category-pill:hover {
+            background: rgba(14, 165, 233, 0.2);
+            border-color: #0ea5e9;
+            transform: translateX(4px);
+        }
+
+        .category-pill h6 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+
+        .category-pill p {
+            margin: 0;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .tts-active {
+            color: #10b981 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
+            <li><a href="/member/classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
+            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li class="active"><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <div class="d-flex align-items-center gap-2">
+                <h4 class="m-0 fw-bold"><i class="fas fa-robot text-primary me-2"></i>AI Gym Assistant</h4>
+                <span class="badge bg-success" style="font-size: 10px; padding: 4px 8px;">INTELLIGENT BOT</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-secondary small">Welcome, <strong id="nav-profile-username" class="text-white">Member</strong></span>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            
+            <div class="row g-4">
+                
+                <!-- Left: Interactive Knowledge Quick Actions -->
+                <div class="col-lg-3 d-none d-lg-block animate-fade-in">
+                    <div class="glass-panel p-3 h-100 d-flex flex-column">
+                        <h6 class="fw-bold mb-3 text-white d-flex align-items-center gap-2">
+                            <i class="fas fa-sparkles text-accent"></i> Quick Topics
+                        </h6>
+                        
+                        <div class="category-pill" onclick="sendPrompt('What is my membership status and plan expiry date?')">
+                            <h6><i class="fas fa-id-card me-1"></i> My Membership</h6>
+                            <p>Status, plan details & expiry</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('How is my attendance this month?')">
+                            <h6><i class="fas fa-calendar-check me-1"></i> Gym Attendance</h6>
+                            <p>Monthly visits & check-in streak</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('Who is my personal trainer?')">
+                            <h6><i class="fas fa-user-tie me-1"></i> My Trainer</h6>
+                            <p>Trainer specialization & info</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('Show my current workout plan')">
+                            <h6><i class="fas fa-running me-1"></i> Today\'s Workout</h6>
+                            <p>Active routines & exercises</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('Suggest a 3-day workout split for fat loss and toning')">
+                            <h6><i class="fas fa-dumbbell me-1"></i> Workout Split</h6>
+                            <p>Push-Pull-Legs & Full body</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('High protein vegetarian post-workout meal ideas')">
+                            <h6><i class="fas fa-utensils me-1"></i> Diet & Nutrition</h6>
+                            <p>Protein meals, calories & macros</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('What group classes are scheduled this week?')">
+                            <h6><i class="fas fa-users me-1"></i> Group Classes</h6>
+                            <p>Yoga, Zumba & CrossFit schedules</p>
+                        </div>
+
+                        <div class="category-pill" onclick="sendPrompt('What are the gym opening and closing timings?')">
+                            <h6><i class="fas fa-clock me-1"></i> Gym Timings</h6>
+                            <p>Opening hours & amenities</p>
+                        </div>
+
+                        <!-- Safety Notice Box -->
+                        <div class="mt-auto p-2 rounded" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);">
+                            <small class="text-danger d-block fw-bold" style="font-size: 10px;">
+                                <i class="fas fa-shield-alt me-1"></i> MEDICAL DISCLAIMER
+                            </small>
+                            <small class="text-secondary" style="font-size: 10px; line-height: 1.3; display: block; margin-top: 2px;">
+                                General fitness advice only. For acute pain or injury, consult a physician.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Full-Scale Chatbot Card -->
+                <div class="col-lg-9 animate-fade-in">
+                    <div class="chat-main-card">
+                        
+                        <!-- Header -->
+                        <div class="chat-box-header">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="chat-avatar-mascot">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <h5 class="m-0 fw-bold text-white d-flex align-items-center gap-2">
+                                        Gym Fit Virtual Assistant
+                                        <span class="badge bg-success" style="font-size: 10px; padding: 3px 8px;">ACTIVE</span>
+                                    </h5>
+                                    <small class="text-secondary" style="font-size: 12px;">Powered by Spring Boot AI Engine & Contextual DB</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button id="btn-toggle-tts" class="btn btn-outline-secondary btn-sm" title="Toggle Audio Readout (Text-to-Speech)">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <button id="btn-clear-chat" class="btn btn-outline-danger btn-sm" title="Clear Conversation History">
+                                    <i class="fas fa-trash-alt me-1"></i> Clear Chat
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Messages Container -->
+                        <div id="full-chat-messages" class="chat-messages-container">
+                            <!-- Welcome Initial Message -->
+                            <div class="chat-msg-row bot">
+                                <div class="chat-avatar-mascot" style="width: 36px; height: 36px; font-size: 16px;">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <div class="chat-bubble">
+                                        <p>👋 <strong>Welcome to your personal AI Gym Assistant!</strong></p>
+                                        <p>I am connected directly to your gym profile. I can help you with:</p>
+                                        <ul>
+                                            <li>Checking your <strong>membership status</strong>, <strong>expiry</strong>, and <strong>attendance records</strong></li>
+                                            <li>Recommending customized <strong>workout splits</strong> & <strong>exercise form tips</strong></li>
+                                            <li>Calculating <strong>protein targets</strong>, <strong>healthy meal ideas</strong>, and <strong>diet plans</strong></li>
+                                            <li>Finding <strong>upcoming group classes</strong> and <strong>trainer contacts</strong></li>
+                                        </ul>
+                                        <p>How can I assist your workout today?</p>
+                                    </div>
+                                    <span class="chat-msg-time">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Suggestion Chips -->
+                        <div id="full-chat-suggestions" class="chat-suggestions-wrapper">
+                            <button class="chat-chip-btn" data-query="What is my membership status?"><i class="fas fa-id-card"></i> My Membership</button>
+                            <button class="chat-chip-btn" data-query="How is my attendance this month?"><i class="fas fa-calendar-check"></i> My Attendance</button>
+                            <button class="chat-chip-btn" data-query="Suggest a 3-day workout split"><i class="fas fa-running"></i> Workout Split</button>
+                            <button class="chat-chip-btn" data-query="High protein meal ideas"><i class="fas fa-utensils"></i> High Protein Diet</button>
+                            <button class="chat-chip-btn" data-query="Who is my assigned trainer?"><i class="fas fa-user-tie"></i> My Trainer</button>
+                            <button class="chat-chip-btn" data-query="What classes are happening today?"><i class="fas fa-users"></i> Gym Classes</button>
+                        </div>
+
+                        <!-- Input Bar -->
+                        <div class="chat-input-wrapper">
+                            <button id="btn-voice-input" class="chat-action-btn chat-voice-btn" title="Voice Typing">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <input type="text" id="chat-text-input" class="chat-input-field" placeholder="Type your fitness question or request (e.g., 'What is my plan expiry?')" autocomplete="off">
+                            <button id="btn-send-message" class="chat-action-btn chat-send-btn" title="Send Message">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Authentication JS -->
+    <script src="/js/auth.js"></script>
+
+    <script>
+        checkAuth(['ROLE_MEMBER', 'ROLE_ADMIN', 'ROLE_TRAINER']);
+
+        const username = getUsername() || localStorage.getItem('gym_username') || localStorage.getItem('username') || 'Member';
+        document.getElementById('nav-profile-username').innerText = username;
+
+        const messagesContainer = document.getElementById('full-chat-messages');
+        const suggestionsContainer = document.getElementById('full-chat-suggestions');
+        const textInput = document.getElementById('chat-text-input');
+        const btnSend = document.getElementById('btn-send-message');
+        const btnVoice = document.getElementById('btn-voice-input');
+        const btnClear = document.getElementById('btn-clear-chat');
+        const btnToggleTTS = document.getElementById('btn-toggle-tts');
+
+        let isTTSActive = false;
+        let isListening = false;
+        let recognition = null;
+
+        // Toggle Text-to-Speech
+        btnToggleTTS.addEventListener('click', () => {
+            isTTSActive = !isTTSActive;
+            btnToggleTTS.classList.toggle('tts-active', isTTSActive);
+            btnToggleTTS.classList.toggle('btn-outline-success', isTTSActive);
+            btnToggleTTS.classList.toggle('btn-outline-secondary', !isTTSActive);
+            if (isTTSActive) {
+                speakText('Voice readout enabled.');
+            }
+        });
+
+        // Speech-to-Text Recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRec();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                btnVoice.classList.add('listening');
+                textInput.placeholder = 'Listening... Please speak your fitness query';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                textInput.value = transcript;
+                setTimeout(() => doSendMessage(), 400);
+            };
+
+            recognition.onerror = () => stopVoice();
+            recognition.onend = () => stopVoice();
+
+            btnVoice.addEventListener('click', () => {
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    try { recognition.start(); } catch (e) { console.warn(e); }
+                }
+            });
+        } else {
+            btnVoice.style.display = 'none';
+        }
+
+        function stopVoice() {
+            isListening = false;
+            btnVoice.classList.remove('listening');
+            textInput.placeholder = 'Type your fitness question or request (e.g., \'What is my plan expiry?\')';
+        }
+
+        // Send triggers
+        btnSend.addEventListener('click', doSendMessage);
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                doSendMessage();
+            }
+        });
+
+        // Quick Suggestions
+        suggestionsContainer.addEventListener('click', (e) => {
+            const chip = e.target.closest('.chat-chip-btn');
+            if (chip) {
+                const query = chip.getAttribute('data-query');
+                if (query) {
+                    textInput.value = query;
+                    doSendMessage();
+                }
+            }
+        });
+
+        window.sendPrompt = function (query) {
+            textInput.value = query;
+            doSendMessage();
+        };
+
+        // Clear Chat
+        btnClear.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to clear your conversation history?')) return;
+            const token = getToken() || localStorage.getItem('gym_token') || localStorage.getItem('token');
+            if (token) {
+                try {
+                    await fetch('/api/chat/clear', {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (err) {
+                    console.error('Clear chat error:', err);
+                }
+            }
+            messagesContainer.innerHTML = `
+                <div class="chat-msg-row bot">
+                    <div class="chat-avatar-mascot" style="width: 36px; height: 36px; font-size: 16px;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div class="chat-bubble">
+                            <p>🧹 <em>Chat history cleared.</em></p>
+                            <p>What would you like to explore today?</p>
+                        </div>
+                        <span class="chat-msg-time">Just now</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Send Message Function
+        async function doSendMessage() {
+            const text = textInput.value.trim();
+            if (!text) return;
+
+            appendMsg('user', text, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+            textInput.value = '';
+            btnSend.disabled = true;
+
+            const typingIndicator = showTyping();
+            scrollToBottom();
+
+            const token = getToken() || localStorage.getItem('gym_token') || localStorage.getItem('token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            try {
+                const res = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ message: text, sessionId: 'session-' + username })
+                });
+
+                removeTyping(typingIndicator);
+                btnSend.disabled = false;
+
+                if (res.ok) {
+                    const data = await res.json();
+                    appendMsg('bot', data.reply, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), data.isMedicalSafetyNotice);
+                    
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        updateSuggestions(data.suggestions);
+                    }
+
+                    if (isTTSActive && data.reply) {
+                        speakText(cleanForSpeech(data.reply));
+                    }
+                } else {
+                    appendMsg('bot', '⚠️ Failed to connect to AI Assistant. Please verify your session and try again.', 'Now');
+                }
+            } catch (err) {
+                removeTyping(typingIndicator);
+                btnSend.disabled = false;
+                console.error('Chat error:', err);
+                appendMsg('bot', '⚠️ Network error communicating with server.', 'Now');
+            }
+
+            scrollToBottom();
+        }
+
+        // Load History on Startup
+        async function loadHistory() {
+            const token = getToken() || localStorage.getItem('gym_token') || localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/chat/history', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const history = await res.json();
+                    if (history && history.length > 0) {
+                        messagesContainer.innerHTML = '';
+                        history.forEach(item => {
+                            const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                            appendMsg('user', item.userMessage, timeStr);
+                            appendMsg('bot', item.botResponse, timeStr);
+                        });
+                        scrollToBottom();
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function appendMsg(sender, text, timeStr, isSafety = false) {
+            const row = document.createElement('div');
+            row.className = `chat-msg-row ${sender}`;
+
+            const formatted = formatMarkdown(text);
+
+            if (sender === 'bot') {
+                row.innerHTML = `
+                    <div class="chat-avatar-mascot" style="width: 36px; height: 36px; font-size: 16px; ${isSafety ? 'background: linear-gradient(135deg, #ef4444, #f59e0b);' : ''}">
+                        <i class="fas ${isSafety ? 'fa-shield-alt' : 'fa-robot'}"></i>
+                    </div>
+                    <div>
+                        <div class="chat-bubble" ${isSafety ? 'style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1);"' : ''}>
+                            ${formatted}
+                        </div>
+                        <span class="chat-msg-time">${timeStr || 'Just now'}</span>
+                    </div>
+                `;
+            } else {
+                row.innerHTML = `
+                    <div class="chat-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div class="chat-bubble">
+                            ${escapeHtml(text)}
+                        </div>
+                        <span class="chat-msg-time">${timeStr || 'Just now'}</span>
+                    </div>
+                `;
+            }
+
+            messagesContainer.appendChild(row);
+        }
+
+        function showTyping() {
+            const ind = document.createElement('div');
+            ind.id = 'full-typing-ind';
+            ind.className = 'chat-msg-row bot';
+            ind.innerHTML = `
+                <div class="chat-avatar-mascot" style="width: 36px; height: 36px; font-size: 16px;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <div class="chat-bubble">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(ind);
+            return ind;
+        }
+
+        function removeTyping(ind) {
+            if (ind && ind.parentNode) {
+                ind.parentNode.removeChild(ind);
+            }
+        }
+
+        function updateSuggestions(list) {
+            suggestionsContainer.innerHTML = '';
+            list.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = 'chat-chip-btn';
+                btn.setAttribute('data-query', s);
+                btn.innerHTML = `<i class="fas fa-bolt"></i> ${escapeHtml(s)}`;
+                suggestionsContainer.appendChild(btn);
+            });
+        }
+
+        function formatMarkdown(text) {
+            if (!text) return '';
+            let html = escapeHtml(text);
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function cleanForSpeech(mdText) {
+            return mdText
+                .replace(/\*\*/g, '')
+                .replace(/\*/g, '')
+                .replace(/`/g, '')
+                .replace(/#/g, '')
+                .replace(/•/g, '')
+                .replace(/[⚠️🚨🌱🥗💪🏋️‍♂️🧘📊📋💳⏰🏢📌💡]/gu, '');
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.rate = 1.0;
+                utter.pitch = 1.0;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Initialize history
+        loadHistory();
+    </script>
+</body>
+</html>

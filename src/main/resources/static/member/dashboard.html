@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style -->
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot-widget.css">
 </head>
 <body>
 
@@ -29,6 +30,7 @@
             <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
             <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
             <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
             <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
         </ul>
     </div>
@@ -85,6 +87,22 @@
                             <p class="text-secondary small mb-0">QR Pass Code: <strong id="qr-code-text" class="text-success">GYM-MEMBER-1</strong></p>
                             <small class="text-muted d-block mt-2">Show this QR Code at the gym entrance scanner for auto check-in.</small>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Gym Assistant Banner -->
+            <div class="glass-panel p-4 mb-4 animate-fade-in" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(14, 165, 233, 0.12)); border-color: rgba(99, 102, 241, 0.3);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-success text-white" style="font-size:11px;padding:4px 8px;"><i class="fas fa-sparkles me-1"></i>AI POWERED</span>
+                            <h5 class="fw-bold mb-0 text-white">Ask Your AI Virtual Gym Assistant</h5>
+                        </div>
+                        <p class="text-secondary small m-0">Need immediate answers about your membership expiry, attendance streak, workout splits, high-protein diets, or exercise forms? Chat with our AI bot anytime!</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/member/chatbot.html" class="btn btn-primary fw-semibold"><i class="fas fa-robot me-2"></i>Launch AI Assistant</a>
                     </div>
                 </div>
             </div>
@@ -347,5 +365,7 @@
             checkAttendanceStatus();
         });
     </script>
+    <!-- AI Gym Assistant Floating Widget -->
+    <script src="/js/chatbot-widget.js"></script>
 </body>
 </html>

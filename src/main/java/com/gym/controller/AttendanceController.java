@@ -75,18 +75,18 @@ public class AttendanceController {
             if (code == null || code.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("QR Code is required");
             }
-            code = code.trim();
+            final String searchCode = code.trim();
             Long userId = null;
-            if (code.startsWith("GYM-MEMBER-")) {
-                final Long targetId = Long.parseLong(code.replace("GYM-MEMBER-", ""));
+            if (searchCode.startsWith("GYM-MEMBER-")) {
+                final Long targetId = Long.parseLong(searchCode.replace("GYM-MEMBER-", ""));
                 User user = userRepository.findById(targetId)
                         .orElseThrow(() -> new ResourceNotFoundException("User not found for member ID " + targetId));
                 userId = user.getId();
-            } else if (code.matches("\\d+")) {
-                userId = Long.parseLong(code);
+            } else if (searchCode.matches("\\d+")) {
+                userId = Long.parseLong(searchCode);
             } else {
-                User user = userRepository.findByUsername(code)
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found: " + code));
+                User user = userRepository.findByUsername(searchCode)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found: " + searchCode));
                 userId = user.getId();
             }
             AttendanceDTO dto = attendanceService.checkIn(userId);

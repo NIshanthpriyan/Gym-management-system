@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 // REST API role-based authorization
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/chat/**").hasAnyRole("ADMIN", "MEMBER", "TRAINER")
                 .requestMatchers("/api/member/**").hasAnyRole("ADMIN", "MEMBER")
                 .requestMatchers("/api/trainers/**").hasAnyRole("ADMIN", "TRAINER", "MEMBER")
                 .requestMatchers("/api/trainer/**").hasAnyRole("ADMIN", "TRAINER")

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style -->
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot-widget.css">
 </head>
 <body>
 
@@ -24,9 +25,12 @@
             <li class="active"><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
             <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
             <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
+            <li><a href="/member/classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
             <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
             <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
             <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
             <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
         </ul>
     </div>
@@ -200,5 +204,7 @@
         // Load
         document.addEventListener('DOMContentLoaded', loadProfile);
     </script>
+    <!-- AI Gym Assistant Floating Widget -->
+    <script src="/js/chatbot-widget.js"></script>
 </body>
 </html>
