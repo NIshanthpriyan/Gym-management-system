@@ -233,9 +233,11 @@ async function fetchWithAuth(endpoint, options = {}) {
         const response = await fetch(`${API_URL}${endpoint}`, options);
         
         if (response.status === 401 || response.status === 403) {
-            console.error('Session expired or unauthorized access.');
-            logout();
-            return null;
+            if (token && !token.startsWith('demo-jwt')) {
+                console.error('Session expired or unauthorized access.');
+                logout();
+                return null;
+            }
         }
 
         if (!response.ok) {

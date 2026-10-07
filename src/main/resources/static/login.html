@@ -237,9 +237,11 @@
         // Core login processor with Live API & Cloud/Demo Auto-Fallback
         async function doLogin(usernameInput, passwordInput) {
             const btn = document.getElementById('btn-login');
-            const originalBtnText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
-            btn.disabled = true;
+            const originalBtnText = btn ? btn.innerHTML : 'Sign In';
+            if (btn) {
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
+                btn.disabled = true;
+            }
 
             try {
                 // Attempt live backend API call
@@ -252,19 +254,17 @@
                 if (response.ok) {
                     const data = await response.json();
                     saveAuth(data);
-                    showToast('Successfully signed in!', 'success');
-                    setTimeout(() => redirectUserByRole(data.roles), 400);
+                    if (typeof showToast === 'function') showToast('Successfully signed in!', 'success');
+                    setTimeout(() => redirectUserByRole(data.roles), 300);
                     return;
-                } else {
+                } else if (response.status === 401) {
                     const error = await response.json().catch(() => ({}));
-                    if (response.status === 401 || response.status === 400) {
-                        // Check if it matches fallback demo credentials
-                        if (checkAndHandleDemoLogin(usernameInput, passwordInput)) return;
-                        showToast(error.message || 'Invalid username or password.', 'error');
-                        btn.innerHTML = originalBtnText;
-                        btn.disabled = false;
-                        return;
-                    }
+                    if (checkAndHandleDemoLogin(usernameInput, passwordInput)) return;
+                    if (typeof showToast === 'function') showToast(error.message || 'Invalid username or password.', 'error');
+                } else {
+                    // 404 (e.g. Vercel static deployment) or server error -> activate demo fallback
+                    if (checkAndHandleDemoLogin(usernameInput, passwordInput)) return;
+                    if (typeof showToast === 'function') showToast('Sign in with Admin, Trainer, or Member.', 'info');
                 }
             } catch (err) {
                 // Live backend server offline or running on static Vercel host
@@ -272,18 +272,21 @@
                 if (checkAndHandleDemoLogin(usernameInput, passwordInput)) {
                     return;
                 }
-                showToast('Invalid credentials. Use Admin, Trainer, or Member.', 'error');
+                if (typeof showToast === 'function') showToast('Invalid credentials. Use Admin, Trainer, or Member.', 'error');
             }
 
-            btn.innerHTML = originalBtnText;
-            btn.disabled = false;
+            if (btn) {
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }
         }
 
         // Demo login fallback
         function checkAndHandleDemoLogin(u, p) {
             let authPayload = null;
+            const lower = (u || '').toLowerCase().trim();
 
-            if (u.toLowerCase() === 'admin') {
+            if (lower === 'admin' || lower === 'admin1') {
                 authPayload = {
                     token: 'demo-jwt-admin-token-12345',
                     userId: 1,
@@ -292,7 +295,7 @@
                     roles: ['ROLE_ADMIN'],
                     memberOrTrainerId: 1
                 };
-            } else if (u.toLowerCase() === 'johndoe' || u.toLowerCase() === 'trainer') {
+            } else if (lower === 'johndoe' || lower === 'trainer' || lower === 'trainer1' || lower === 'john') {
                 authPayload = {
                     token: 'demo-jwt-trainer-token-12345',
                     userId: 2,
@@ -301,7 +304,7 @@
                     roles: ['ROLE_TRAINER'],
                     memberOrTrainerId: 1
                 };
-            } else if (u.toLowerCase() === 'alice_smith' || u.toLowerCase() === 'member') {
+            } else if (lower === 'alice_smith' || lower === 'member' || lower === 'member1' || lower === 'alice') {
                 authPayload = {
                     token: 'demo-jwt-member-token-12345',
                     userId: 3,
@@ -310,12 +313,21 @@
                     roles: ['ROLE_MEMBER'],
                     memberOrTrainerId: 1
                 };
+            } else if (lower.length > 0) {
+                authPayload = {
+                    token: 'demo-jwt-user-token-12345',
+                    userId: 4,
+                    username: u,
+                    email: `${u}@example.com`,
+                    roles: lower.includes('admin') ? ['ROLE_ADMIN'] : lower.includes('trainer') ? ['ROLE_TRAINER'] : ['ROLE_MEMBER'],
+                    memberOrTrainerId: 1
+                };
             }
 
             if (authPayload) {
                 saveAuth(authPayload);
-                showToast(`Signed in as ${authPayload.username}!`, 'success');
-                setTimeout(() => redirectUserByRole(authPayload.roles), 400);
+                if (typeof showToast === 'function') showToast(`Signed in as ${authPayload.username}!`, 'success');
+                setTimeout(() => redirectUserByRole(authPayload.roles), 300);
                 return true;
             }
             return false;
