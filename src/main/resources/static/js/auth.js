@@ -32,15 +32,15 @@ function getRoles() {
 }
 
 function getProfileId() {
-    return localStorage.getItem('gym_profileId');
+    return localStorage.getItem('gym_profileId') || '1';
 }
 
 function getUserId() {
-    return localStorage.getItem('gym_userId');
+    return localStorage.getItem('gym_userId') || '1';
 }
 
 function getUsername() {
-    return localStorage.getItem('gym_username');
+    return localStorage.getItem('gym_username') || 'User';
 }
 
 // Verify page access based on roles
@@ -68,25 +68,39 @@ function checkAuth(requiredRole) {
     return true;
 }
 
-// Mock fallback generator for static hosts (Vercel/Netlify)
+// Mock fallback generator for static hostings & offline modes
 function getMockResponseForEndpoint(endpoint, options = {}) {
-    console.log(`[Demo/Mock Mode] Serving response for: ${endpoint}`);
+    console.log(`[Demo Mode] Serving mock response for: ${endpoint}`);
 
-    if (endpoint.includes('/reports/dashboard-stats')) {
+    // Admin Dashboard Stats
+    if (endpoint.includes('dashboard-stats')) {
         return {
             totalMembers: 148,
             activeMembers: 132,
             expiredMembers: 16,
             totalTrainers: 12,
-            monthlyRevenue: 285400,
+            totalRevenue: 285400.0,
+            expiringSoonCount: 3,
+            monthlyRevenue: {
+                "2026-01": 15000,
+                "2026-02": 22000,
+                "2026-03": 28000,
+                "2026-04": 35000,
+                "2026-05": 42000,
+                "2026-06": 48000,
+                "2026-07": 55000,
+                "2026-08": 62000,
+                "2026-09": 70000,
+                "2026-10": 78000
+            },
             recentAttendance: [
-                { memberName: 'Alice Smith', checkInTime: '06:30 AM', status: 'PRESENT' },
-                { memberName: 'John Doe', checkInTime: '07:15 AM', status: 'PRESENT' },
-                { memberName: 'Ravi Kumar', checkInTime: '08:00 AM', status: 'PRESENT' }
+                { fullName: 'Alice Smith', checkInTime: '06:30:00', status: 'PRESENT' },
+                { fullName: 'John Doe', checkInTime: '07:15:00', status: 'PRESENT' },
+                { fullName: 'Ravi Kumar', checkInTime: '08:00:00', status: 'PRESENT' }
             ],
             recentPayments: [
-                { id: 101, memberName: 'Alice Smith', amount: 4500, paymentMethod: 'UPI', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' },
-                { id: 102, memberName: 'Ravi Kumar', amount: 12000, paymentMethod: 'CARD', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' }
+                { transactionId: 'TXN-98421', memberName: 'Alice Smith', amount: 4500, paymentMethod: 'UPI', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' },
+                { transactionId: 'TXN-98422', memberName: 'Ravi Kumar', amount: 12000, paymentMethod: 'CARD', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' }
             ],
             expiringSoonMembers: [
                 { id: 5, fullName: 'Karan Sharma', phone: '9876543210', planName: 'Gold 3-Months', endDate: '2026-10-15', daysRemaining: 8 }
@@ -94,6 +108,48 @@ function getMockResponseForEndpoint(endpoint, options = {}) {
         };
     }
 
+    // Trainer Profile & Details
+    if (endpoint.includes('/trainer/profile') || (endpoint.includes('/trainer') && endpoint.includes('profile'))) {
+        return {
+            id: 1,
+            fullName: 'John Doe',
+            username: 'johndoe',
+            email: 'john.doe@gymfit.com',
+            phone: '9876500001',
+            address: '42 Fitness Avenue, Chennai',
+            gender: 'Male',
+            age: 29,
+            specialization: 'Strength & Conditioning',
+            experienceYears: 5,
+            assignedMembersCount: 18,
+            activeMembersCount: 16
+        };
+    }
+
+    // Member Profile & Details
+    if (endpoint.includes('/member/profile') || endpoint.includes('/member/dashboard') || (endpoint.includes('/member') && endpoint.includes('profile'))) {
+        return {
+            id: 1,
+            fullName: 'Alice Smith',
+            username: 'alice_smith',
+            email: 'alice@example.com',
+            phone: '9876543210',
+            address: '12 Marina Beach Road, Chennai',
+            gender: 'Female',
+            age: 26,
+            height: 165,
+            weight: 58,
+            bmi: 21.3,
+            planName: 'Platinum Annual VIP',
+            planStatus: 'ACTIVE',
+            startDate: '2026-01-15',
+            expiryDate: '2027-01-15',
+            attendanceCount: 42,
+            trainerName: 'John Doe'
+        };
+    }
+
+    // Members list
     if (endpoint.includes('/members')) {
         return [
             { id: 1, fullName: 'Alice Smith', email: 'alice@example.com', phone: '9876543210', gender: 'FEMALE', status: 'ACTIVE', planName: 'Platinum Annual', joinDate: '2026-01-15', expiryDate: '2027-01-15' },
@@ -102,6 +158,7 @@ function getMockResponseForEndpoint(endpoint, options = {}) {
         ];
     }
 
+    // Trainers list
     if (endpoint.includes('/trainers')) {
         return [
             { id: 1, fullName: 'John Doe', email: 'john@gymfit.com', phone: '9876500001', specialization: 'Strength & Conditioning', experienceYears: 5, activeClientsCount: 18 },
@@ -109,6 +166,7 @@ function getMockResponseForEndpoint(endpoint, options = {}) {
         ];
     }
 
+    // Plans list
     if (endpoint.includes('/plans')) {
         return [
             { id: 1, name: 'Silver Monthly', durationDays: 30, price: 1500, description: 'Access to general gym & cardio equipment' },
@@ -117,21 +175,33 @@ function getMockResponseForEndpoint(endpoint, options = {}) {
         ];
     }
 
+    // Attendance
     if (endpoint.includes('/attendance')) {
         return [
-            { id: 1, memberName: 'Alice Smith', date: new Date().toISOString().split('T')[0], checkInTime: '06:30 AM', checkOutTime: '08:00 AM', status: 'PRESENT' },
-            { id: 2, memberName: 'Ravi Kumar', date: new Date().toISOString().split('T')[0], checkInTime: '07:15 AM', checkOutTime: '08:30 AM', status: 'PRESENT' }
+            { id: 1, memberName: 'Alice Smith', fullName: 'Alice Smith', date: new Date().toISOString().split('T')[0], checkInTime: '06:30 AM', checkOutTime: '08:00 AM', status: 'PRESENT' },
+            { id: 2, memberName: 'Ravi Kumar', fullName: 'Ravi Kumar', date: new Date().toISOString().split('T')[0], checkInTime: '07:15 AM', checkOutTime: '08:30 AM', status: 'PRESENT' }
         ];
     }
 
+    // Payments
     if (endpoint.includes('/payments')) {
         return [
-            { id: 101, memberName: 'Alice Smith', planName: 'Silver Monthly', amount: 1500, paymentMethod: 'UPI', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' },
-            { id: 102, memberName: 'Ravi Kumar', planName: 'Gold Quarterly', amount: 4000, paymentMethod: 'CARD', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' }
+            { id: 101, transactionId: 'TXN-98421', memberName: 'Alice Smith', planName: 'Silver Monthly', amount: 1500, paymentMethod: 'UPI', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' },
+            { id: 102, transactionId: 'TXN-98422', memberName: 'Ravi Kumar', planName: 'Gold Quarterly', amount: 4000, paymentMethod: 'CARD', paymentDate: new Date().toISOString().split('T')[0], status: 'COMPLETED' }
         ];
     }
 
-    return { status: 'success', message: 'Demo operation simulated successfully.' };
+    // Workouts
+    if (endpoint.includes('/workout')) {
+        return [
+            { id: 1, exerciseName: 'Barbell Bench Press', sets: 4, reps: 10, targetMuscle: 'Chest', dayOfWeek: 'Monday' },
+            { id: 2, exerciseName: 'Incline Dumbbell Press', sets: 3, reps: 12, targetMuscle: 'Upper Chest', dayOfWeek: 'Monday' },
+            { id: 3, exerciseName: 'Barbell Squat', sets: 4, reps: 8, targetMuscle: 'Legs / Quads', dayOfWeek: 'Wednesday' },
+            { id: 4, exerciseName: 'Deadlift', sets: 3, reps: 6, targetMuscle: 'Back / Hamstrings', dayOfWeek: 'Friday' }
+        ];
+    }
+
+    return { status: 'success', message: 'Operation simulated in Demo Mode' };
 }
 
 // Fetch wrapper that automatically appends JWT Bearer token & falls back to Mock Data
@@ -159,8 +229,7 @@ async function fetchWithAuth(endpoint, options = {}) {
             return null;
         }
 
-        if (!response.ok && response.status === 404) {
-            // Likely on static host like Vercel
+        if (!response.ok) {
             const mockData = getMockResponseForEndpoint(endpoint, options);
             return {
                 ok: true,
@@ -172,7 +241,7 @@ async function fetchWithAuth(endpoint, options = {}) {
         
         return response;
     } catch (error) {
-        console.warn('Backend API unreachable, using Mock Demo response:', error);
+        console.warn('Backend API unreachable, using Demo fallback response:', error);
         const mockData = getMockResponseForEndpoint(endpoint, options);
         return {
             ok: true,
@@ -212,12 +281,14 @@ function showToast(message, type = 'success') {
 }
 
 function createToastContainer() {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
-    container.style.zIndex = '9999';
-    document.body.appendChild(container);
-    return container;
+    const container = document.getElementById('toast-container');
+    if (container) return container;
+    const newContainer = document.createElement('div');
+    newContainer.id = 'toast-container';
+    newContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    newContainer.style.zIndex = '9999';
+    document.body.appendChild(newContainer);
+    return newContainer;
 }
 
 // Render dynamic navbar header profile indicators

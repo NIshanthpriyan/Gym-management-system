@@ -1,14 +1,24 @@
 {
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/login",
-      "dest": "/login.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+  "rewrites": [
+    { "source": "/", "destination": "/login.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
+    { "source": "/admin/members", "destination": "/admin/members.html" },
+    { "source": "/admin/trainers", "destination": "/admin/trainers.html" },
+    { "source": "/admin/plans", "destination": "/admin/plans.html" },
+    { "source": "/admin/attendance", "destination": "/admin/attendance.html" },
+    { "source": "/admin/payments", "destination": "/admin/payments.html" },
+    { "source": "/admin/reports", "destination": "/admin/reports.html" },
+    { "source": "/trainer/dashboard", "destination": "/trainer/dashboard.html" },
+    { "source": "/trainer/members", "destination": "/trainer/members.html" },
+    { "source": "/trainer/workouts", "destination": "/trainer/workouts.html" },
+    { "source": "/member/dashboard", "destination": "/member/dashboard.html" },
+    { "source": "/member/profile", "destination": "/member/profile.html" },
+    { "source": "/member/workout", "destination": "/member/workout.html" },
+    { "source": "/member/diet", "destination": "/member/diet.html" },
+    { "source": "/member/bmi", "destination": "/member/bmi.html" },
+    { "source": "/member/payments", "destination": "/member/payments.html" }
   ]
 }
