@@ -1,15 +1,11 @@
 {
   "version": 2,
-  "public": true,
+  "outputDirectory": "src/main/resources/static",
   "cleanUrls": true,
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "http://localhost:8080/api/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/src/main/resources/static/$1"
+      "dest": "/$1"
     }
   ]
 }
