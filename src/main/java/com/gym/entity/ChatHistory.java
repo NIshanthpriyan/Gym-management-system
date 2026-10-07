@@ -1,33 +1,32 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "chat_history")
+@Document(collection = "chat_history")
 public class ChatHistory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
     private User user;
 
-    @Column(name = "user_message", nullable = false, length = 2000)
+    @Indexed
+    private String username;
+
     private String userMessage;
 
-    @Column(name = "bot_response", nullable = false, length = 5000)
     private String botResponse;
 
-    @Column(name = "intent_category", length = 50)
     private String intentCategory;
 
-    @Column(name = "session_id", length = 100)
     private String sessionId;
 
-    @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
     public ChatHistory() {
@@ -36,14 +35,13 @@ public class ChatHistory {
 
     public ChatHistory(User user, String userMessage, String botResponse, String intentCategory, String sessionId) {
         this.user = user;
+        this.username = user != null ? user.getUsername() : null;
         this.userMessage = userMessage;
         this.botResponse = botResponse;
         this.intentCategory = intentCategory;
         this.sessionId = sessionId;
         this.timestamp = LocalDateTime.now();
     }
-
-    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -59,6 +57,17 @@ public class ChatHistory {
 
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.username = user.getUsername();
+        }
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getUserMessage() {

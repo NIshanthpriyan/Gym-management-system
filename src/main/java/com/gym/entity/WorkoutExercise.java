@@ -1,36 +1,30 @@
 package com.gym.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "workout_exercises")
+@Document(collection = "workout_exercises")
 public class WorkoutExercise {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workout_plan_id", nullable = false)
+    @DBRef
     @JsonIgnore
     private WorkoutPlan workoutPlan;
 
-    @Column(name = "day_of_week", nullable = false, length = 15)
     private String dayOfWeek; // Monday, Tuesday, etc.
 
-    @Column(name = "exercise_name", nullable = false, length = 100)
     private String exerciseName;
 
-    @Column(nullable = false)
     private Integer sets = 3;
 
-    @Column(nullable = false)
     private Integer reps = 10;
 
-    @Column(name = "weight_lbs")
     private Integer weightLbs = 0;
 
-    @Column(columnDefinition = "TEXT")
     private String notes;
 
     public WorkoutExercise() {}

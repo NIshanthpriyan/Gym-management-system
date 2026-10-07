@@ -11,3 +11,8 @@ target/
 .classpath
 .project
 temp_maven/
+temp_mongodb/
+temp_mongodb.zip
+*.zip
+data/
+.env

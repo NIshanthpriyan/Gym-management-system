@@ -1,67 +1,48 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "users", indexes = {
-    @Index(name = "idx_user_username", columnList = "username"),
-    @Index(name = "idx_user_email", columnList = "email")
-})
+@Document(collection = "users")
 public class User {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Indexed(unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Indexed(unique = true)
     private String email;
 
-    @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false, name = "full_name", length = 100)
     private String fullName;
 
-    @Column(length = 15)
     private String phone;
 
-    @Column(columnDefinition = "TEXT")
     private String address;
 
-    @Column(length = 10)
     private String gender;
 
     private LocalDate dob;
 
-    @Column(name = "profile_picture")
     private String profilePicture;
 
-    @Column(nullable = false, length = 20)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @DBRef
     private Set<Role> roles = new HashSet<>();
 
     public User() {}
@@ -78,9 +59,9 @@ public class User {
         this.dob = dob;
         this.profilePicture = profilePicture;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.roles = roles;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
+        this.roles = roles != null ? roles : new HashSet<>();
     }
 
     public Long getId() {

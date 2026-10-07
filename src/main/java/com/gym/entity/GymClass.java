@@ -1,39 +1,32 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "gym_classes")
+@Document(collection = "gym_classes")
 public class GymClass {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "class_name", nullable = false, length = 100)
     private String className;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trainer_id")
+    @DBRef
     private Trainer trainer;
 
-    @Column(name = "schedule_time", nullable = false)
     private LocalDateTime scheduleTime;
 
-    @Column(length = 50)
     private String room = "Studio A";
 
-    @Column(nullable = false)
     private Integer capacity = 20;
 
-    @Column(name = "booked_count", nullable = false)
     private Integer bookedCount = 0;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 20)
     private String status = "SCHEDULED"; // SCHEDULED, COMPLETED, CANCELLED
 
     public GymClass() {}

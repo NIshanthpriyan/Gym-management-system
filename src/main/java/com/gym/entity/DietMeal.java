@@ -1,28 +1,24 @@
 package com.gym.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "diet_meals")
+@Document(collection = "diet_meals")
 public class DietMeal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "diet_plan_id", nullable = false)
+    @DBRef
     @JsonIgnore
     private DietPlan dietPlan;
 
-    @Column(name = "meal_type", nullable = false, length = 30) // BREAKFAST, LUNCH, SNACK, DINNER
-    private String mealType;
+    private String mealType; // BREAKFAST, LUNCH, SNACK, DINNER
 
-    @Column(name = "food_items", columnDefinition = "TEXT", nullable = false)
     private String foodItems;
 
-    @Column(name = "calories")
     private Integer calories;
 
     public DietMeal() {}

@@ -1,33 +1,27 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "attendance", 
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"})},
-    indexes = {@Index(name = "idx_attendance_date", columnList = "date")}
-)
+@Document(collection = "attendance")
 public class Attendance {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
     private User user;
 
-    @Column(nullable = false)
     private LocalDate date;
 
-    @Column(name = "check_in_time")
     private LocalTime checkInTime;
 
-    @Column(name = "check_out_time")
     private LocalTime checkOutTime;
 
-    @Column(nullable = false, length = 20)
     private String status = "PRESENT"; // PRESENT, ABSENT, LATE
 
     public Attendance() {}

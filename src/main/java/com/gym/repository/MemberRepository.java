@@ -3,28 +3,23 @@ package com.gym.repository;
 import com.gym.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends MongoRepository<Member, Long>, MemberRepositoryCustom {
+
+    @Query("{ 'user.$id': ?0 }")
     Optional<Member> findByUserId(Long userId);
-    Optional<Member> findByUserUsername(String username);
-    
-    @Query("SELECT m FROM Member m WHERE " +
-           "LOWER(m.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(m.user.email) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(m.user.phone) LIKE LOWER(CONCAT('%', :query, '%'))")
-    Page<Member> searchMembers(@Param("query") String query, Pageable pageable);
     
     Page<Member> findByStatus(String status, Pageable pageable);
     
-    @Query("SELECT m FROM Member m WHERE m.membershipExpiryDate <= :date AND m.status = 'ACTIVE'")
-    List<Member> findExpiringMemberships(@Param("date") LocalDate date);
+    @Query("{ 'membershipExpiryDate': { $lte: ?0 }, 'status': 'ACTIVE' }")
+    List<Member> findExpiringMemberships(LocalDate date);
     
+    @Query("{ 'trainer.$id': ?0 }")
     List<Member> findByTrainerId(Long trainerId);
-    List<Member> findByTrainerUserId(Long userId);
 }

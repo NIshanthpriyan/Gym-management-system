@@ -1,39 +1,30 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "workout_plans")
+@Document(collection = "workout_plans")
 public class WorkoutPlan {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
+    @DBRef
     private Member member;
 
-
-
-    @Column(name = "plan_name", nullable = false, length = 100)
     private String planName;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "duration_weeks")
     private Integer durationWeeks = 4;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<WorkoutExercise> exercises = new ArrayList<>();
 
     public WorkoutPlan() {}
@@ -44,8 +35,8 @@ public class WorkoutPlan {
         this.planName = planName;
         this.description = description;
         this.durationWeeks = durationWeeks;
-        this.createdAt = createdAt;
-        this.exercises = exercises;
+        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
+        this.exercises = exercises != null ? exercises : new ArrayList<>();
     }
 
     public Long getId() {
@@ -63,8 +54,6 @@ public class WorkoutPlan {
     public void setMember(Member member) {
         this.member = member;
     }
-
-
 
     public String getPlanName() {
         return planName;

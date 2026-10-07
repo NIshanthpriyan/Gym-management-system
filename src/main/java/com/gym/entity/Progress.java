@@ -1,48 +1,39 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "progress")
+@Document(collection = "progress")
 public class Progress {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
+    @DBRef
     private Member member;
 
-    @Column(name = "recorded_date", nullable = false)
     private LocalDate recordedDate;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal weight; // kg
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal height; // meters
 
-    @Column(name = "body_fat_percentage", precision = 5, scale = 2)
     private BigDecimal bodyFatPercentage;
 
-    @Column(name = "muscle_mass", precision = 5, scale = 2)
     private BigDecimal muscleMass;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal chest;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal waist;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal hips;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal bmi;
 
-    @Column(columnDefinition = "TEXT")
     private String notes;
 
     public Progress() {}

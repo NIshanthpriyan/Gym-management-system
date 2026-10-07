@@ -1,44 +1,36 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "payments", indexes = {
-    @Index(name = "idx_payment_date", columnList = "payment_date")
-})
+@Document(collection = "payments")
 public class Payment {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
+    @DBRef
     private Member member;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "membership_plan_id")
+    @DBRef
     private MembershipPlan membershipPlan;
 
-    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @CreationTimestamp
-    @Column(name = "payment_date", nullable = false, updatable = false)
-    private LocalDateTime paymentDate;
+    private LocalDateTime paymentDate = LocalDateTime.now();
 
-    @Column(name = "payment_method", length = 30)
     private String paymentMethod = "CASH"; // CASH, CREDIT_CARD, DEBIT_CARD, UPI, BANK_TRANSFER
 
-    @Column(name = "transaction_id", unique = true, length = 100)
+    @Indexed(unique = true, sparse = true)
     private String transactionId;
 
-    @Column(nullable = false, length = 20)
     private String status = "COMPLETED"; // COMPLETED, PENDING, FAILED
 
-    @Column(name = "pdf_receipt_path")
     private String pdfReceiptPath;
 
     public Payment() {}
@@ -48,7 +40,7 @@ public class Payment {
         this.member = member;
         this.membershipPlan = membershipPlan;
         this.amount = amount;
-        this.paymentDate = paymentDate;
+        this.paymentDate = paymentDate != null ? paymentDate : LocalDateTime.now();
         this.paymentMethod = paymentMethod;
         this.transactionId = transactionId;
         this.status = status;

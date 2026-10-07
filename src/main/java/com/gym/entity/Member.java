@@ -1,42 +1,34 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "members", indexes = {
-    @Index(name = "idx_member_expiry", columnList = "membership_expiry_date")
-})
+@Document(collection = "members")
 public class Member {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @DBRef
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "membership_plan_id")
+    @DBRef
     private MembershipPlan membershipPlan;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trainer_id")
+    @DBRef
     private Trainer trainer;
 
-    @Column(name = "join_date", nullable = false)
     private LocalDate joinDate;
 
-    @Column(nullable = false, length = 20)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, EXPIRED
 
-    @Column(name = "membership_expiry_date")
     private LocalDate membershipExpiryDate;
 
-    @Column(name = "emergency_contact", length = 100)
     private String emergencyContact;
 
-    @Column(name = "emergency_phone", length = 15)
     private String emergencyPhone;
 
     public Member() {}

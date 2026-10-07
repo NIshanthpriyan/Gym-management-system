@@ -39,8 +39,10 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         plan.setDurationWeeks(dto.getDurationWeeks() != null ? dto.getDurationWeeks() : 4);
 
         if (dto.getExercises() != null) {
+            long exId = 1L;
             for (WorkoutExerciseDTO exDTO : dto.getExercises()) {
                 WorkoutExercise exercise = new WorkoutExercise();
+                exercise.setId(exDTO.getId() != null ? exDTO.getId() : exId++);
                 exercise.setWorkoutPlan(plan);
                 exercise.setDayOfWeek(exDTO.getDayOfWeek());
                 exercise.setExerciseName(exDTO.getExerciseName());
@@ -92,8 +94,10 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         // Clear and reload exercises (mappedBy orphanRemoval handles table cleanup)
         plan.getExercises().clear();
         if (dto.getExercises() != null) {
+            long exId = 1L;
             for (WorkoutExerciseDTO exDTO : dto.getExercises()) {
                 WorkoutExercise exercise = new WorkoutExercise();
+                exercise.setId(exDTO.getId() != null ? exDTO.getId() : exId++);
                 exercise.setWorkoutPlan(plan);
                 exercise.setDayOfWeek(exDTO.getDayOfWeek());
                 exercise.setExerciseName(exDTO.getExerciseName());

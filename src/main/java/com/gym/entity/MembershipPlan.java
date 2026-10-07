@@ -1,28 +1,26 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "membership_plans")
+@Document(collection = "membership_plans")
 public class MembershipPlan {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Indexed(unique = true)
     private String name;
 
-    @Column(name = "duration_months", nullable = false)
     private Integer durationMonths;
 
-    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, length = 20)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE
 
     public MembershipPlan() {}

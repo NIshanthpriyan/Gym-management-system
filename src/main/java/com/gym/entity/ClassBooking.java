@@ -1,30 +1,25 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "class_bookings", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"gym_class_id", "member_id"})
-})
+@Document(collection = "class_bookings")
 public class ClassBooking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "gym_class_id", nullable = false)
+    @DBRef
     private GymClass gymClass;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", nullable = false)
+    @DBRef
     private Member member;
 
-    @Column(name = "booking_time", nullable = false)
     private LocalDateTime bookingTime = LocalDateTime.now();
 
-    @Column(length = 20)
     private String status = "CONFIRMED"; // CONFIRMED, CANCELLED
 
     public ClassBooking() {}

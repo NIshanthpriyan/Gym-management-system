@@ -1,48 +1,39 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "diet_plans")
+@Document(collection = "diet_plans")
 public class DietPlan {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "plan_name", nullable = false, length = 100)
     private String planName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", nullable = false)
+    @DBRef
     private Member member;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trainer_id")
+    @DBRef
     private Trainer trainer;
 
-    @Column(name = "calories_per_day")
     private Integer caloriesPerDay;
 
-    @Column(name = "protein_grams")
     private Integer proteinGrams;
 
-    @Column(name = "carbs_grams")
     private Integer carbsGrams;
 
-    @Column(name = "fats_grams")
     private Integer fatsGrams;
 
-    @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "dietPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DietMeal> meals = new ArrayList<>();
 
     public DietPlan() {}

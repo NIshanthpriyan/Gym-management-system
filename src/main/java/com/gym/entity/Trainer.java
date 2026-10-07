@@ -1,30 +1,26 @@
 package com.gym.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "trainers")
+@Document(collection = "trainers")
 public class Trainer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @DBRef
     private User user;
 
-    @Column(length = 100)
     private String specialization;
 
-    @Column(name = "experience_years")
     private Integer experienceYears = 0;
 
-    @Column(precision = 10, scale = 2)
     private BigDecimal salary = BigDecimal.ZERO;
 
-    @Column(nullable = false, length = 20)
     private String status = "ACTIVE"; // ACTIVE, INACTIVE
 
     public Trainer() {}

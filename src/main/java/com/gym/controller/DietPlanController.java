@@ -65,11 +65,13 @@ public class DietPlanController {
 
             if (payload.get("meals") != null) {
                 List<Map<String, Object>> mealsList = (List<Map<String, Object>>) payload.get("meals");
+                long mealId = 1L;
                 for (Map<String, Object> m : mealsList) {
                     String mealType = (String) m.get("mealType");
                     String foodItems = (String) m.get("foodItems");
                     Integer calories = Integer.valueOf(m.get("calories").toString());
                     DietMeal meal = new DietMeal(mealType, foodItems, calories);
+                    meal.setId(mealId++);
                     plan.addMeal(meal);
                 }
             }
