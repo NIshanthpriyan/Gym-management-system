@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Gym Fit redirecting...</title>
-    <script src="/js/auth.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         if (!getToken()) {
-            window.location.href = '/login.html';
+            window.location.href = 'login.html';
         } else {
             const roles = getRoles();
             if (roles.includes('ROLE_ADMIN')) {
-                window.location.href = '/admin/dashboard.html';
+                window.location.href = 'admin/dashboard.html';
             } else if (roles.includes('ROLE_TRAINER')) {
-                window.location.href = '/trainer/dashboard.html';
+                window.location.href = 'trainer/dashboard.html';
             } else if (roles.includes('ROLE_MEMBER')) {
-                window.location.href = '/member/dashboard.html';
+                window.location.href = 'member/dashboard.html';
             } else {
                 logout();
             }

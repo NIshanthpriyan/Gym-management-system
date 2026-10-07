@@ -9,8 +9,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style -->
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/chatbot-widget.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/chatbot-widget.css">
 </head>
 <body>
 
@@ -21,16 +21,16 @@
             <span>GYM FIT</span>
         </div>
         <ul class="sidebar-menu">
-            <li class="active"><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
-            <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
-            <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
-            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
-            <li><a href="/member/diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
-            <li><a href="/member/classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
-            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
-            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
-            <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
-            <li><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
+            <li class="active"><a href="dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
+            <li><a href="classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
+            <li><a href="attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li><a href="chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
             <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
         </ul>
     </div>
@@ -52,7 +52,7 @@
             <div id="expiry-warning-banner" class="alert alert-warning border-0 glass-panel mb-4 d-none animate-fade-in" role="alert" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3) !important;">
                 <div class="d-flex align-items-center justify-content-between">
                     <span class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Your subscription is expiring soon! Renew now to continue training.</span>
-                    <a href="/member/payments.html" class="btn btn-warning btn-sm fw-bold">Renew Subscription</a>
+                    <a href="payments.html" class="btn btn-warning btn-sm fw-bold">Renew Subscription</a>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
                         <p class="text-secondary small m-0">Need immediate answers about your membership expiry, attendance streak, workout splits, high-protein diets, or exercise forms? Chat with our AI bot anytime!</p>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="/member/chatbot.html" class="btn btn-primary fw-semibold"><i class="fas fa-robot me-2"></i>Launch AI Assistant</a>
+                        <a href="chatbot.html" class="btn btn-primary fw-semibold"><i class="fas fa-robot me-2"></i>Launch AI Assistant</a>
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                         <p class="text-secondary small m-0">New to the gym? Learn warm-up routines, dynamic stretching, full-body exercises, correct form tips, and cool down steps.</p>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="/member/workout-guide.html" class="btn btn-primary fw-semibold"><i class="fas fa-book-open me-2"></i>Open Workout Guide</a>
+                        <a href="workout-guide.html" class="btn btn-primary fw-semibold"><i class="fas fa-book-open me-2"></i>Open Workout Guide</a>
                     </div>
                 </div>
             </div>
@@ -177,7 +177,7 @@
                         <div id="workout-plan-preview">
                             <p class="text-secondary small">Fetching workout assignments...</p>
                         </div>
-                        <a href="/member/workout.html" class="btn btn-outline-secondary btn-sm mt-3">Full Workout Checklist</a>
+                        <a href="workout.html" class="btn btn-outline-secondary btn-sm mt-3">Full Workout Checklist</a>
                     </div>
                 </div>
 
@@ -187,7 +187,7 @@
                         <div id="progress-preview">
                             <p class="text-secondary small">No physical metrics logged yet.</p>
                         </div>
-                        <a href="/member/bmi.html" class="btn btn-outline-secondary btn-sm mt-3">Log Physical Metrics</a>
+                        <a href="bmi.html" class="btn btn-outline-secondary btn-sm mt-3">Log Physical Metrics</a>
                     </div>
                 </div>
 
@@ -199,7 +199,7 @@
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core security scripts -->
-    <script src="/js/auth.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
         checkAuth('ROLE_MEMBER');
         loadNavbarProfile();
@@ -366,6 +366,6 @@
         });
     </script>
     <!-- AI Gym Assistant Floating Widget -->
-    <script src="/js/chatbot-widget.js"></script>
+    <script src="../js/chatbot-widget.js"></script>
 </body>
 </html>

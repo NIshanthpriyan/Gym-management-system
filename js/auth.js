@@ -12,10 +12,18 @@ function saveAuth(data) {
     localStorage.setItem('gym_profileId', data.memberOrTrainerId || '1');
 }
 
+function getAppRootPrefix() {
+    const loc = window.location.pathname;
+    if (loc.includes('/admin/') || loc.includes('/trainer/') || loc.includes('/member/')) {
+        return '../';
+    }
+    return './';
+}
+
 // Clear local storage on logout
 function logout() {
     localStorage.clear();
-    window.location.href = '/login.html';
+    window.location.href = getAppRootPrefix() + 'login.html';
 }
 
 // Retrieve details
@@ -47,19 +55,20 @@ function getUsername() {
 function checkAuth(requiredRole) {
     const token = getToken();
     const roles = getRoles();
+    const prefix = getAppRootPrefix();
 
     if (!token) {
-        window.location.href = '/login.html';
+        window.location.href = prefix + 'login.html';
         return false;
     }
 
     if (requiredRole && !roles.includes(requiredRole)) {
         if (roles.includes('ROLE_ADMIN')) {
-            window.location.href = '/admin/dashboard.html';
+            window.location.href = prefix + 'admin/dashboard.html';
         } else if (roles.includes('ROLE_TRAINER')) {
-            window.location.href = '/trainer/dashboard.html';
+            window.location.href = prefix + 'trainer/dashboard.html';
         } else if (roles.includes('ROLE_MEMBER')) {
-            window.location.href = '/member/dashboard.html';
+            window.location.href = prefix + 'member/dashboard.html';
         } else {
             logout();
         }
