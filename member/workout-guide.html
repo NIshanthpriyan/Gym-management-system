@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Guide - Gym Fit</title>
+    <meta name="description" content="Complete beginner gym guide for new Gym Fit members. Learn warm-up routines, dynamic stretching, full body workouts, correct form tips, and cool down exercises.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Level Tabs */
+        .level-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+        .level-tab {
+            padding:10px 24px; border-radius:30px; border:1px solid var(--border-color);
+            background:transparent; color:var(--text-secondary); font-weight:600; font-size:14px;
+            cursor:pointer; transition:var(--transition); font-family:'Outfit',sans-serif;
+        }
+        .level-tab:hover { border-color:var(--accent-blue); color:var(--accent-blue); }
+        .level-tab.active-beginner      { background:linear-gradient(135deg,#10b981,#14b8a6); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(16,185,129,.35); }
+        .level-tab.active-intermediate  { background:linear-gradient(135deg,#f59e0b,#f97316); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(245,158,11,.35); }
+        .level-tab.active-advanced      { background:linear-gradient(135deg,#ef4444,#a855f7); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(239,68,68,.35); }
+
+        /* Section Header */
+        .section-header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+        .section-icon   { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+        .section-title  { font-size:20px; font-weight:700; margin:0; }
+        .section-subtitle { font-size:13px; color:var(--text-secondary); margin:2px 0 0 0; }
+
+        /* Exercise Card */
+        .exercise-card {
+            background:rgba(15,23,42,.5); border:1px solid var(--border-color); border-radius:14px;
+            padding:18px 20px; transition:var(--transition); cursor:pointer; position:relative; overflow:hidden;
+        }
+        .exercise-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:4px 0 0 4px; }
+        .exercise-card.warmup-card::before   { background:linear-gradient(180deg,#f59e0b,#f97316); }
+        .exercise-card.stretch-card::before  { background:linear-gradient(180deg,#14b8a6,#0ea5e9); }
+        .exercise-card.workout-card::before  { background:linear-gradient(180deg,#a855f7,#0ea5e9); }
+        .exercise-card.cooldown-card::before { background:linear-gradient(180deg,#10b981,#14b8a6); }
+        .exercise-card:hover { border-color:rgba(255,255,255,.15); background:rgba(15,23,42,.75); transform:translateX(4px); }
+        .exercise-card .card-header-row { display:flex; align-items:center; justify-content:space-between; }
+        .exercise-card .ex-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-right:14px; flex-shrink:0; }
+        .exercise-card .ex-title { font-weight:600; font-size:15px; margin:0; }
+        .exercise-card .ex-meta  { font-size:12px; color:var(--text-secondary); margin:3px 0 0 0; }
+        .exercise-card .expand-arrow { color:var(--text-muted); transition:var(--transition); font-size:14px; }
+        .exercise-card.expanded .expand-arrow { transform:rotate(180deg); color:var(--accent-blue); }
+        .exercise-desc { display:none; padding-top:14px; margin-top:14px; border-top:1px solid var(--border-color); font-size:13.5px; color:var(--text-secondary); line-height:1.7; }
+        .exercise-card.expanded .exercise-desc { display:block; }
+
+        /* Stat badges */
+        .stat-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; margin-right:6px; margin-top:8px; }
+        .stat-sets  { background:rgba(168,85,247,.15); color:var(--accent-purple); border:1px solid rgba(168,85,247,.25); }
+        .stat-reps  { background:rgba(14,165,233,.15);  color:var(--accent-blue);   border:1px solid rgba(14,165,233,.25); }
+        .stat-rest  { background:rgba(16,185,129,.15);  color:var(--accent-green);  border:1px solid rgba(16,185,129,.25); }
+        .stat-dur   { background:rgba(245,158,11,.15);  color:#f59e0b;              border:1px solid rgba(245,158,11,.25); }
+
+        /* Progress bar */
+        .workout-progress-bar  { height:8px; background:rgba(255,255,255,.06); border-radius:10px; overflow:hidden; }
+        .workout-progress-fill { height:100%; border-radius:10px; background:var(--gradient-primary); transition:width .5s ease; }
+
+        /* Checklist */
+        .checklist-item { display:flex; align-items:center; gap:14px; padding:14px 16px; background:rgba(15,23,42,.4); border:1px solid var(--border-color); border-radius:12px; transition:var(--transition); cursor:pointer; }
+        .checklist-item:hover { border-color:rgba(255,255,255,.12); }
+        .checklist-item.checked { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.25); }
+        .checklist-item.checked .check-circle { background:var(--accent-green); border-color:var(--accent-green); }
+        .checklist-item.checked .check-circle i { opacity:1; }
+        .checklist-item.checked .check-label { text-decoration:line-through; color:var(--text-muted); }
+        .check-circle { width:24px; height:24px; border-radius:50%; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:var(--transition); }
+        .check-circle i { font-size:11px; color:#fff; opacity:0; transition:var(--transition); }
+        .check-label { font-weight:500; font-size:14px; }
+        .check-meta  { font-size:12px; color:var(--text-secondary); }
+
+        /* Timer */
+        .timer-display { font-size:52px; font-weight:800; background:var(--gradient-primary); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; line-height:1; }
+        .timer-label   { font-size:13px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
+        .timer-btn { width:52px; height:52px; border-radius:50%; border:none; font-size:20px; cursor:pointer; transition:var(--transition); display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif; }
+        .timer-btn-play  { background:var(--gradient-primary); color:#fff; }
+        .timer-btn-reset { background:rgba(239,68,68,.15); color:var(--accent-red); border:1px solid rgba(239,68,68,.25); }
+        .timer-btn:hover { transform:scale(1.08); }
+        .preset-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--border-color); background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:var(--transition); font-family:'Outfit',sans-serif; }
+        .preset-btn:hover,.preset-btn.active { background:rgba(14,165,233,.15); color:var(--accent-blue); border-color:rgba(14,165,233,.3); }
+
+        /* Tip card */
+        .tip-card { background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(14,165,233,.08)); border:1px solid rgba(168,85,247,.2); border-radius:16px; padding:24px; }
+
+        /* Safety */
+        .safety-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-color); }
+        .safety-item:last-child { border-bottom:none; }
+        .safety-icon { width:38px; height:38px; border-radius:10px; background:rgba(239,68,68,.12); color:var(--accent-red); border:1px solid rgba(239,68,68,.2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
+
+        /* Completion ring */
+        .completion-ring { width:110px; height:110px; position:relative; flex-shrink:0; }
+        .completion-ring svg { transform:rotate(-90deg); }
+        .completion-ring .ring-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+        .completion-ring .ring-pct  { font-size:22px; font-weight:800; background:var(--gradient-primary); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .completion-ring .ring-done { font-size:11px; color:var(--text-secondary); }
+
+        /* Level visibility */
+        .level-content { display:none; }
+        .level-content.active { display:block; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-dumbbell"></i><span>GYM FIT</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+        <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+        <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+        <li class="active"><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+        <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+        <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+        <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+        <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Wrapper -->
+<div class="main-wrapper">
+
+    <!-- Top Navbar -->
+    <div class="navbar-top">
+        <div class="d-flex align-items-center gap-3">
+            <button class="timer-btn timer-btn-reset d-lg-none" style="width:38px;height:38px;font-size:16px;" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h4 class="m-0 fw-bold">
+                <i class="fas fa-book-open me-2" style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>
+                Workout Guide
+            </h4>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-secondary small">Welcome, <strong id="nav-username" class="text-white">Member</strong></span>
+        </div>
+    </div>
+
+    <!-- Content Body -->
+    <div class="content-body">
+
+        <!-- HERO BANNER -->
+        <div class="glass-panel p-4 mb-4 animate-fade-in" style="background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(168,85,247,.08));border-color:rgba(14,165,233,.2);">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="stat-badge stat-rest mb-2" style="font-size:13px;padding:6px 16px;display:inline-flex;"><i class="fas fa-star me-1"></i> Beginner Gym Guide</span>
+                    <h2 class="fw-bold mb-2" style="font-size:28px;">Welcome to <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Your Fitness Journey</span> &#x1F4AA;</h2>
+                    <p class="text-secondary mb-3" style="font-size:15px;max-width:560px;">This guide helps you get started safely and effectively. Follow each section in order for best results. Consistency is key!</p>
+                    <div class="d-flex gap-4 flex-wrap">
+                        <div><span class="fw-bold text-white fs-5">7</span> <span class="text-secondary small">Sections</span></div>
+                        <div><span class="fw-bold text-white fs-5">20+</span> <span class="text-secondary small">Exercises</span></div>
+                        <div><span class="fw-bold text-white fs-5">60</span> <span class="text-secondary small">Min Session</span></div>
+                        <div><span class="fw-bold text-white fs-5">3</span> <span class="text-secondary small">Difficulty Levels</span></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                    <div style="font-size:90px;line-height:1;">&#x1F3CB;&#xFE0F;</div>
+                    <p class="text-secondary small mt-2 mb-0">Stay Consistent. Stay Strong.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEVEL SELECTOR -->
+        <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.05s;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Select Workout Level</h5>
+                    <p class="text-secondary small mb-0">Choose the difficulty that matches your current fitness level</p>
+                </div>
+                <div class="level-tabs">
+                    <button class="level-tab active-beginner" id="tab-beginner" onclick="switchLevel('beginner')"><i class="fas fa-seedling me-2"></i>Beginner</button>
+                    <button class="level-tab" id="tab-intermediate" onclick="switchLevel('intermediate')"><i class="fas fa-fire me-2"></i>Intermediate</button>
+                    <button class="level-tab" id="tab-advanced" onclick="switchLevel('advanced')"><i class="fas fa-bolt me-2"></i>Advanced</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETION STATUS -->
+        <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.08s;">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <div class="completion-ring">
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                        <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
+                        <circle id="progress-circle" cx="55" cy="55" r="46" fill="none"
+                            stroke="url(#progressGrad)" stroke-width="10" stroke-linecap="round"
+                            stroke-dasharray="289" stroke-dashoffset="289"/>
+                        <defs>
+                            <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0ea5e9"/>
+                                <stop offset="100%" stop-color="#a855f7"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="ring-val">
+                        <span class="ring-pct" id="ring-pct">0%</span>
+                        <span class="ring-done">Done</span>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="fw-bold mb-1">Today's Workout Progress</h5>
+                    <p class="text-secondary small mb-3">Complete all exercises in your checklist to finish today's session</p>
+                    <div class="row g-3">
+                        <div class="col-4 col-sm-3 text-center">
+                            <div class="fw-bold text-white fs-5" id="stat-completed">0</div>
+                            <div class="text-secondary" style="font-size:11px;">Completed</div>
+                        </div>
+                        <div class="col-4 col-sm-3 text-center">
+                            <div class="fw-bold text-white fs-5" id="stat-remaining">10</div>
+                            <div class="text-secondary" style="font-size:11px;">Remaining</div>
+                        </div>
+                        <div class="col-4 col-sm-3 text-center">
+                            <div class="fw-bold" id="stat-status" style="font-size:14px;color:var(--accent-blue);">Not Started</div>
+                            <div class="text-secondary" style="font-size:11px;">Status</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="resetChecklist()" style="white-space:nowrap;font-size:13px;padding:10px 20px;">
+                    <i class="fas fa-redo me-2"></i>Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             BEGINNER LEVEL
+        ============================================================ -->
+        <div class="level-content active" id="level-beginner">
+            <div class="row g-4">
+                <!-- Left Column -->
+                <div class="col-lg-8">
+
+                    <!-- SECTION 1: WARM-UP -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.10s;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background:rgba(245,158,11,.15);color:#f59e0b;"><i class="fas fa-fire-alt"></i></div>
+                            <div>
+                                <h5 class="section-title">1. Warm-Up</h5>
+                                <p class="section-subtitle"><i class="fas fa-clock me-1"></i>5-10 Minutes - Essential Before Every Session</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-3 mb-4" style="background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);">
+                            <p class="mb-0 text-secondary" style="font-size:13.5px;line-height:1.7;">
+                                <i class="fas fa-info-circle me-2" style="color:#f59e0b;"></i>
+                                <strong class="text-white">Why Warm-Up?</strong> Warming up gradually raises your heart rate, increases blood flow to your muscles, and prepares joints for exercise. It reduces the risk of injury, improves performance, and mentally prepares you for the workout ahead.
+                            </p>
+                        </div>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="exercise-card warmup-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-walking"></i></div>
+                                        <div><p class="ex-title">Treadmill Walk</p><p class="ex-meta">Cardio - Low Intensity</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-dur"><i class="fas fa-clock"></i> 5 min</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-tachometer-alt"></i> 3-4 km/h</span>
+                                </div>
+                                <div class="exercise-desc">Walk at a slow, comfortable pace on the treadmill. Keep your back straight, arms swinging naturally, and breathe deeply. Gradually increase speed after 2 minutes to raise your heart rate gently. This primes your cardiovascular system and warms up leg muscles including quads, hamstrings, and calves.</div>
+                            </div>
+
+                            <div class="exercise-card warmup-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-bicycle"></i></div>
+                                        <div><p class="ex-title">Stationary Cycle</p><p class="ex-meta">Cardio - Low Impact</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-dur"><i class="fas fa-clock"></i> 5-7 min</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-tachometer-alt"></i> Light Resistance</span>
+                                </div>
+                                <div class="exercise-desc">Set the resistance to 1-2 and pedal at a steady, relaxed pace. Keep your back upright and grip handles lightly. An excellent low-impact alternative to treadmill walking - especially gentle on the knees. Engages your hip flexors, quads, and calves while elevating your heart rate progressively.</div>
+                            </div>
+
+                            <div class="exercise-card warmup-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-star"></i></div>
+                                        <div><p class="ex-title">Jumping Jacks</p><p class="ex-meta">Full Body - Dynamic</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 2 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 20 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 30s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Stand with feet together, arms at your sides. Jump while spreading your feet shoulder-width apart and raising your arms overhead. Jump back to starting position. Keep the movement controlled and land softly. Jumping jacks are a full-body warm-up that raises heart rate quickly and activates coordination between upper and lower body.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: DYNAMIC STRETCHING -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.15s;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background:rgba(20,184,166,.15);color:var(--accent-teal);"><i class="fas fa-wind"></i></div>
+                            <div>
+                                <h5 class="section-title">2. Dynamic Stretching</h5>
+                                <p class="section-subtitle">Prepare Joints and Muscles for Resistance Training</p>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="exercise-card stretch-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(20,184,166,.12);color:var(--accent-teal);"><i class="fas fa-circle-notch"></i></div>
+                                        <div><p class="ex-title">Arm Circles</p><p class="ex-meta">Shoulders - Mobility</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 2 x 10 each direction</span></div>
+                                <div class="exercise-desc">Extend arms out to the sides at shoulder height. Make small circles, gradually increasing to large circles. Do 10 reps forward, then 10 reps backward. <strong class="text-white">Benefits:</strong> Loosens the shoulder joint, improves range of motion, warms rotator cuff muscles, and prevents shoulder injuries during pressing and pulling exercises.</div>
+                            </div>
+
+                            <div class="exercise-card stretch-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(20,184,166,.12);color:var(--accent-teal);"><i class="fas fa-exchange-alt"></i></div>
+                                        <div><p class="ex-title">Leg Swings</p><p class="ex-meta">Hips - Hamstrings - Balance</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 10 each leg - Front and Side</span></div>
+                                <div class="exercise-desc">Hold a wall or rail for support. Swing one leg forward and back in a pendulum motion, gradually increasing the range. Repeat side-to-side. <strong class="text-white">Benefits:</strong> Dynamically stretches the hamstrings and hip flexors, improves hip mobility, and activates the glutes - essential for squats and lunges.</div>
+                            </div>
+
+                            <div class="exercise-card stretch-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(20,184,166,.12);color:var(--accent-teal);"><i class="fas fa-sync-alt"></i></div>
+                                        <div><p class="ex-title">Shoulder Rolls</p><p class="ex-meta">Shoulders - Upper Back - Neck</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 10 Forward + 10 Backward</span></div>
+                                <div class="exercise-desc">Stand or sit upright. Lift your shoulders up toward your ears, then roll them back and down in a smooth circular motion. Reverse direction. <strong class="text-white">Benefits:</strong> Releases tension in the shoulder and upper back region, improves posture, and preps the traps and delts for pressing movements.</div>
+                            </div>
+
+                            <div class="exercise-card stretch-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(20,184,166,.12);color:var(--accent-teal);"><i class="fas fa-redo-alt"></i></div>
+                                        <div><p class="ex-title">Hip Rotations</p><p class="ex-meta">Hips - Core - Lower Back</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 10 each direction</span></div>
+                                <div class="exercise-desc">Stand with feet shoulder-width apart, hands on hips. Make slow, large circles with your hips - 10 clockwise, then 10 counter-clockwise. <strong class="text-white">Benefits:</strong> Lubricates the hip joints, activates core stabilisers, relieves stiffness in the lower back, and prepares the body for squatting and deadlifting patterns.</div>
+                            </div>
+
+                            <div class="exercise-card stretch-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(20,184,166,.12);color:var(--accent-teal);"><i class="fas fa-shoe-prints"></i></div>
+                                        <div><p class="ex-title">Walking Lunges</p><p class="ex-meta">Quads - Glutes - Hip Flexors</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 2 x 10 steps</span></div>
+                                <div class="exercise-desc">Step forward with your right foot, lower your left knee toward the floor (don't let it touch), then push up and step forward with your left foot. Keep your torso upright. <strong class="text-white">Benefits:</strong> Activates quads, glutes, and hip flexors simultaneously while improving balance and coordination - a perfect final warm-up before leg day exercises.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: FULL BODY WORKOUT -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.20s;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background:rgba(168,85,247,.15);color:var(--accent-purple);"><i class="fas fa-dumbbell"></i></div>
+                            <div>
+                                <h5 class="section-title">3. Beginner Full Body Workout</h5>
+                                <p class="section-subtitle">7 Exercises - 3 Sets Each - Full Body Activation</p>
+                            </div>
+                        </div>
+
+                        <!-- Summary Table -->
+                        <div class="table-responsive mb-4">
+                            <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden" style="background:rgba(15,23,42,.6);border:1px solid var(--border-color);">
+                                <thead style="background:rgba(168,85,247,.15);">
+                                    <tr>
+                                        <th class="py-3 px-3"><i class="fas fa-running me-2 text-primary"></i>Exercise</th>
+                                        <th class="py-3 px-3 text-center"><i class="fas fa-layer-group me-2 text-purple"></i>Sets</th>
+                                        <th class="py-3 px-3 text-center"><i class="fas fa-hashtag me-2 text-info"></i>Reps</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="px-3 fw-semibold text-white">Bodyweight Squats</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Push-ups (or Knee Push-ups)</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">8</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Chest Press Machine</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Lat Pulldown</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Seated Row</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Shoulder Press Machine</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                    <tr><td class="px-3 fw-semibold text-white">Plank</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-success">30 Seconds</span></td></tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex align-items-center gap-2 p-2 px-3 rounded" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);">
+                                <i class="fas fa-clock text-success"></i>
+                                <span class="text-secondary small"><strong class="text-white">Recommended Rest Time:</strong> 60–90 seconds between sets</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-compress-alt"></i></div>
+                                        <div><p class="ex-title">Bodyweight Squats</p><p class="ex-meta">Quads - Glutes - Hamstrings</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 10 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 60s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Stand with feet shoulder-width apart. Lower your body as if sitting back into a chair - keep chest up, knees tracking over toes, and weight in your heels. Go until thighs are parallel to the floor, then push back up. <strong class="text-white">Key muscles:</strong> Quadriceps, glutes, hamstrings, and core. The squat is the king of lower-body exercises!</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-hand-rock"></i></div>
+                                        <div><p class="ex-title">Push-ups / Knee Push-ups</p><p class="ex-meta">Chest - Shoulders - Triceps</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 8 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 60s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Start in a plank position (or on knees for modified). Lower your chest to the floor, elbows at 45 degrees, then push back up. Keep core tight throughout - don't let hips sag. <strong class="text-white">Tip:</strong> If regular push-ups are too hard, do knee push-ups until you build upper body strength. Progress takes time!</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-arrows-alt-h"></i></div>
+                                        <div><p class="ex-title">Chest Press Machine</p><p class="ex-meta">Chest - Anterior Deltoid - Triceps</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 10 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 75s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Adjust the seat so handles are at chest level. Grip handles, push forward until arms are nearly extended - don't lock elbows. Slowly return to start. <strong class="text-white">Beginner advantage:</strong> Machines guide your movement path, making them safer and easier to learn form on before transitioning to free weights.</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-arrow-down"></i></div>
+                                        <div><p class="ex-title">Lat Pulldown</p><p class="ex-meta">Latissimus Dorsi - Biceps - Rear Deltoids</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 10 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 75s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Sit at the lat pulldown machine, gripping the bar slightly wider than shoulder-width. Pull the bar down to your upper chest, squeezing your lats at the bottom. Slowly release upward. <strong class="text-white">Form tip:</strong> Lean back slightly (not excessively) and think about pulling your elbows toward your hips. Avoid swinging.</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-grip-lines"></i></div>
+                                        <div><p class="ex-title">Seated Row</p><p class="ex-meta">Mid-Back - Rhomboids - Biceps</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 10 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 75s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Sit at the cable row machine, feet on the platform, knees slightly bent. Pull the handle toward your midsection, keeping elbows close to your body and squeezing your shoulder blades together. Slowly extend back out. <strong class="text-white">Builds:</strong> A strong, thick back that improves posture and balances out your chest pressing work.</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-level-up-alt"></i></div>
+                                        <div><p class="ex-title">Shoulder Press Machine</p><p class="ex-meta">Deltoids - Trapezius - Triceps</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-reps"><i class="fas fa-hashtag"></i> 10 Reps</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 75s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Adjust seat so handles are at shoulder height. Press upward until arms are almost fully extended. Lower slowly back to shoulder level. <strong class="text-white">Form tip:</strong> Keep your core braced and avoid arching your lower back excessively. Builds broad, strong shoulders that improve your physique significantly.</div>
+                            </div>
+
+                            <div class="exercise-card workout-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(168,85,247,.12);color:var(--accent-purple);"><i class="fas fa-ruler-horizontal"></i></div>
+                                        <div><p class="ex-title">Plank</p><p class="ex-meta">Core - Transverse Abdominis - Lower Back</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div>
+                                    <span class="stat-badge stat-sets"><i class="fas fa-layer-group"></i> 3 Sets</span>
+                                    <span class="stat-badge stat-dur"><i class="fas fa-stopwatch"></i> 30 Seconds</span>
+                                    <span class="stat-badge stat-rest"><i class="fas fa-pause"></i> 60s Rest</span>
+                                </div>
+                                <div class="exercise-desc">Get into a forearm plank position - forearms on the floor, elbows below shoulders, body in a straight line from head to heels. Engage your core, squeeze your glutes, and breathe steadily. Don't let your hips drop or rise. <strong class="text-white">Goal:</strong> Build core stability that supports every other exercise you perform in the gym.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4: FORM TIPS -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.25s;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background:rgba(14,165,233,.15);color:var(--accent-blue);"><i class="fas fa-bullseye"></i></div>
+                            <div>
+                                <h5 class="section-title">4. Correct Form Tips</h5>
+                                <p class="section-subtitle">Follow These Rules to Train Safely and Effectively</p>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x1F3CB;&#xFE0F;</div>
+                                    <div><strong class="d-block mb-1">Use Light Weights</strong><span class="text-secondary" style="font-size:13px;">Start lighter than you think you need. Perfect form with light weight is always better than sloppy form with heavy weight.</span></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x1F9CD;</div>
+                                    <div><strong class="d-block mb-1">Focus on Proper Posture</strong><span class="text-secondary" style="font-size:13px;">Keep your spine neutral in most exercises. Avoid rounding your lower back or hunching your shoulders forward.</span></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x1F422;</div>
+                                    <div><strong class="d-block mb-1">Control Every Movement</strong><span class="text-secondary" style="font-size:13px;">Lower weights slowly (2-3 seconds). Avoid using momentum - the muscle grows when it controls the load, not when it swings it.</span></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x1FAF4;</div>
+                                    <div><strong class="d-block mb-1">Breathe Correctly</strong><span class="text-secondary" style="font-size:13px;">Exhale on the exertion (e.g. pushing or pulling). Inhale on the return phase. Never hold your breath during lifts.</span></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x2714;</div>
+                                    <div><strong class="d-block mb-1">Never Sacrifice Form</strong><span class="text-secondary" style="font-size:13px;">Never sacrifice proper execution or safety just to lift heavier weights (ego lifting). Progress gradually and safely.</span></div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;">
+                                    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">&#x1F6D1;</div>
+                                    <div><strong class="d-block mb-1" style="color:var(--accent-red);">Stop Immediately If Pain Occurs</strong><span class="text-secondary" style="font-size:13px;">Muscle burn is normal. Sharp, stabbing, or joint pain is NOT. Stop immediately and consult a trainer or physician before continuing that exercise.</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: COOL DOWN -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.30s;">
+                        <div class="section-header">
+                            <div class="section-icon" style="background:rgba(16,185,129,.15);color:var(--accent-green);"><i class="fas fa-snowflake"></i></div>
+                            <div>
+                                <h5 class="section-title">5. Cool Down</h5>
+                                <p class="section-subtitle">5 Minutes - Always End Every Session With This</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-3 mb-4" style="background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.2);">
+                            <p class="mb-0 text-secondary" style="font-size:13.5px;line-height:1.7;">
+                                <i class="fas fa-info-circle me-2" style="color:var(--accent-green);"></i>
+                                <strong class="text-white">Why Cool Down?</strong> Cooling down helps your heart rate return to normal gradually, prevents blood pooling in the limbs, reduces muscle soreness (DOMS), and improves long-term flexibility. It is just as important as the workout itself!
+                            </p>
+                        </div>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="exercise-card cooldown-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(16,185,129,.12);color:var(--accent-green);"><i class="fas fa-expand-alt"></i></div>
+                                        <div><p class="ex-title">Full Body Stretching</p><p class="ex-meta">Flexibility - Recovery</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-dur"><i class="fas fa-clock"></i> 5 min total</span></div>
+                                <div class="exercise-desc">Hold each stretch for 20-30 seconds. Include: quad stretch, hamstring stretch, chest opener, tricep stretch, and child's pose. Breathe deeply into each stretch - never bounce or force the position. Static stretching after exercise is safe and highly beneficial.</div>
+                            </div>
+                            <div class="exercise-card cooldown-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(16,185,129,.12);color:var(--accent-green);"><i class="fas fa-walking"></i></div>
+                                        <div><p class="ex-title">Slow Walking</p><p class="ex-meta">Heart Rate Recovery</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-dur"><i class="fas fa-clock"></i> 2-3 min</span></div>
+                                <div class="exercise-desc">Walk at a very slow pace on the treadmill or around the gym floor. This keeps blood moving and prevents dizziness that can occur from stopping exercise abruptly. Your heart rate should drop by 20-30 BPM during this phase.</div>
+                            </div>
+                            <div class="exercise-card cooldown-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center">
+                                        <div class="ex-icon" style="background:rgba(16,185,129,.12);color:var(--accent-green);"><i class="fas fa-lungs"></i></div>
+                                        <div><p class="ex-title">Deep Breathing Exercises</p><p class="ex-meta">Relaxation - Nervous System Recovery</p></div>
+                                    </div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div><span class="stat-badge stat-dur"><i class="fas fa-clock"></i> 2 min</span></div>
+                                <div class="exercise-desc">Sit or lie down. Inhale deeply through your nose for 4 counts, hold for 2 counts, exhale slowly through your mouth for 6 counts. This activates your parasympathetic nervous system (rest and digest), reduces cortisol, and accelerates recovery. Do 8-10 breath cycles.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end left col -->
+
+                <!-- Right Column -->
+                <div class="col-lg-4">
+
+                    <!-- DAILY CHECKLIST -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.12s;position:sticky;top:90px;">
+                        <h6 class="fw-bold mb-1"><i class="fas fa-tasks me-2" style="color:var(--accent-purple);"></i>Daily Checklist</h6>
+                        <p class="text-secondary mb-3" style="font-size:12px;">Tap each item to mark complete</p>
+                        <div class="d-flex flex-column gap-2" id="checklist-container"></div>
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-secondary" style="font-size:12px;">Overall Progress</span>
+                                <span class="text-white fw-bold" style="font-size:12px;" id="progress-pct-text">0%</span>
+                            </div>
+                            <div class="workout-progress-bar">
+                                <div class="workout-progress-fill" id="progress-bar-fill" style="width:0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXERCISE TIMER -->
+                    <div class="glass-panel p-4 mb-4 animate-fade-in" style="animation-delay:.18s;">
+                        <h6 class="fw-bold mb-1"><i class="fas fa-stopwatch me-2" style="color:var(--accent-blue);"></i>Exercise Timer</h6>
+                        <p class="text-secondary mb-3" style="font-size:12px;">Use for sets and rest periods</p>
+                        <div class="text-center mb-3">
+                            <div class="timer-display" id="timer-display">00:00</div>
+                            <div class="timer-label" id="timer-label">Ready</div>
+                        </div>
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            <button class="timer-btn timer-btn-play" id="timer-play-btn" onclick="timerToggle()">
+                                <i class="fas fa-play" id="timer-icon"></i>
+                            </button>
+                            <button class="timer-btn timer-btn-reset" onclick="timerReset()">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-secondary mb-2" style="font-size:12px;">Quick Presets</p>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                <button class="preset-btn" id="preset-30"  onclick="timerSetPreset(30,'preset-30')">30s</button>
+                                <button class="preset-btn" id="preset-45"  onclick="timerSetPreset(45,'preset-45')">45s</button>
+                                <button class="preset-btn" id="preset-60"  onclick="timerSetPreset(60,'preset-60')">1 min</button>
+                                <button class="preset-btn" id="preset-90"  onclick="timerSetPreset(90,'preset-90')">90s</button>
+                                <button class="preset-btn" id="preset-120" onclick="timerSetPreset(120,'preset-120')">2 min</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TIP OF THE DAY -->
+                    <div class="tip-card mb-4 animate-fade-in" style="animation-delay:.22s;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="fas fa-lightbulb" style="color:#a855f7;font-size:18px;"></i>
+                            <h6 class="fw-bold mb-0">Tip of the Day</h6>
+                        </div>
+                        <p class="text-white fw-semibold mb-1" style="font-size:14px;" id="tip-headline">Loading...</p>
+                        <p class="text-secondary mb-0" style="font-size:13px;" id="tip-body">Fetching today's tip...</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="stat-badge stat-sets" style="font-size:11px;" id="tip-badge">Tip</span>
+                            <button class="preset-btn" onclick="nextTip()"><i class="fas fa-forward me-1"></i>Next Tip</button>
+                        </div>
+                    </div>
+
+                    <!-- SAFETY PRECAUTIONS -->
+                    <div class="glass-panel p-4 animate-fade-in" style="animation-delay:.26s;">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-shield-alt me-2" style="color:var(--accent-red);"></i>Safety Precautions</h6>
+                        <div class="safety-item">
+                            <div class="safety-icon"><i class="fas fa-tint"></i></div>
+                            <div><strong class="d-block" style="font-size:13px;">Stay Hydrated</strong><span class="text-secondary" style="font-size:12px;">Drink 200-300ml water every 15 minutes during your workout session</span></div>
+                        </div>
+                        <div class="safety-item">
+                            <div class="safety-icon"><i class="fas fa-clock"></i></div>
+                            <div><strong class="d-block" style="font-size:13px;">Don't Skip Rest Days</strong><span class="text-secondary" style="font-size:12px;">Muscles grow during rest, not during workouts. Rest 1-2 days per week</span></div>
+                        </div>
+                        <div class="safety-item">
+                            <div class="safety-icon"><i class="fas fa-user-friends"></i></div>
+                            <div><strong class="d-block" style="font-size:13px;">Ask for a Spotter</strong><span class="text-secondary" style="font-size:12px;">Never lift heavy weights alone without a trainer or spotter present</span></div>
+                        </div>
+                        <div class="safety-item">
+                            <div class="safety-icon"><i class="fas fa-apple-alt"></i></div>
+                            <div><strong class="d-block" style="font-size:13px;">Eat Before Training</strong><span class="text-secondary" style="font-size:12px;">Have a light snack 30-60 min before. Never train on an empty stomach</span></div>
+                        </div>
+                        <div class="safety-item">
+                            <div class="safety-icon"><i class="fas fa-thermometer-half"></i></div>
+                            <div><strong class="d-block" style="font-size:13px;">Warm Up Always</strong><span class="text-secondary" style="font-size:12px;">Never skip warm-up, even on days you feel rushed or highly energetic</span></div>
+                        </div>
+                    </div>
+
+                    <!-- WATER INTAKE REMINDER -->
+                    <div class="glass-panel p-4 mt-4 animate-fade-in" style="animation-delay:.30s;background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(20,184,166,.06));border-color:rgba(14,165,233,.2);">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="fas fa-glass-water" style="color:var(--accent-blue);font-size:20px;"></i>
+                            <h6 class="fw-bold mb-0">Water Intake Reminder</h6>
+                        </div>
+                        <p class="text-secondary mb-3" style="font-size:12px;">Track your hydration throughout your training session.</p>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-white fw-bold" style="font-size:14px;" id="water-logged-text">500 ml / 2,000 ml</span>
+                            <span class="badge bg-info text-dark" id="water-pct-badge">25%</span>
+                        </div>
+                        <div class="workout-progress-bar mb-3">
+                            <div class="workout-progress-fill bg-info" id="water-bar-fill" style="width:25%;"></div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-info flex-grow-1" onclick="addWater(250)"><i class="fas fa-plus me-1"></i>+250 ml</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="resetWater()"><i class="fas fa-undo"></i></button>
+                        </div>
+                    </div>
+
+                </div><!-- end right col -->
+            </div>
+        </div><!-- end level-beginner -->
+
+        <!-- ============================================================
+             INTERMEDIATE LEVEL
+        ============================================================ -->
+        <div class="level-content" id="level-intermediate">
+            <div class="glass-panel p-4 mb-4 animate-fade-in" style="background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(249,115,22,.06));border-color:rgba(245,158,11,.2);">
+                <div class="section-header mb-3">
+                    <div class="section-icon" style="background:rgba(245,158,11,.15);color:#f59e0b;"><i class="fas fa-fire"></i></div>
+                    <div><h5 class="section-title">Intermediate Workout Plan</h5><p class="section-subtitle">3-6 months experience - Push your limits safely</p></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-dumbbell"></i></div><div><p class="ex-title">Barbell Squat</p><p class="ex-meta">Quads - Glutes - Core</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">4 Sets</span><span class="stat-badge stat-reps">8-10 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Use a barbell across your upper traps. Feet shoulder-width, toes slightly out. Brace core, sit back and down, drive through heels. Increase weight by 2.5-5kg when you complete all reps with clean form.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-hand-rock"></i></div><div><p class="ex-title">Bench Press</p><p class="ex-meta">Chest - Shoulders - Triceps</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">4 Sets</span><span class="stat-badge stat-reps">8 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Lie on bench, grip bar slightly wider than shoulders. Lower to chest (touch, don't bounce), press up explosively. Keep feet flat on floor and maintain a slight arch in lower back. Always use a spotter.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-arrow-up"></i></div><div><p class="ex-title">Assisted Pull-Ups</p><p class="ex-meta">Back - Biceps - Core</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">3 Sets</span><span class="stat-badge stat-reps">6-8 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Hang from a bar, grip slightly wider than shoulders. Pull until chin clears the bar, lower with control. Use an assisted pull-up machine if needed. One of the best upper body exercises for building back width.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-angle-double-down"></i></div><div><p class="ex-title">Romanian Deadlift</p><p class="ex-meta">Hamstrings - Glutes - Lower Back</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">3 Sets</span><span class="stat-badge stat-reps">10 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Hold dumbbells in front of thighs. Hinge at hips, pushing them back, lowering the weight along your legs until you feel a deep hamstring stretch. Drive hips forward to return. Never round your back.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-level-up-alt"></i></div><div><p class="ex-title">Dumbbell Shoulder Press</p><p class="ex-meta">Deltoids - Triceps</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">3 Sets</span><span class="stat-badge stat-reps">10-12 Reps</span><span class="stat-badge stat-rest">75s Rest</span></div><div class="exercise-desc">Sit on an upright bench, hold dumbbells at ear level. Press overhead until arms almost extend, lower slowly. Dumbbells challenge each arm independently, fixing strength imbalances that machines cannot address.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #f59e0b;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-ruler-horizontal"></i></div><div><p class="ex-title">Ab Circuit</p><p class="ex-meta">Core - Obliques - Lower Abs</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">3 Rounds</span><span class="stat-badge stat-dur">45s each</span><span class="stat-badge stat-rest">30s Rest</span></div><div class="exercise-desc">Cycle through: Crunches, Bicycle Crunches, Leg Raises, Russian Twists. 45 seconds per exercise, 30 seconds rest between them. Complete 3 full rounds for a comprehensive core session.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             ADVANCED LEVEL
+        ============================================================ -->
+        <div class="level-content" id="level-advanced">
+            <div class="glass-panel p-4 mb-4 animate-fade-in" style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(168,85,247,.06));border-color:rgba(239,68,68,.2);">
+                <div class="section-header mb-3">
+                    <div class="section-icon" style="background:rgba(239,68,68,.15);color:var(--accent-red);"><i class="fas fa-bolt"></i></div>
+                    <div><h5 class="section-title">Advanced Workout Plan</h5><p class="section-subtitle">12+ months experience - High intensity, high results</p></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-dumbbell"></i></div><div><p class="ex-title">Deadlift</p><p class="ex-meta">Full Body - Posterior Chain</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">5 Sets</span><span class="stat-badge stat-reps">5 Reps</span><span class="stat-badge stat-rest">2-3 min Rest</span></div><div class="exercise-desc">The king of all exercises. Bar over mid-foot, hips hinged, lats tight, drive through floor. Bracing the entire core like you're about to get punched is essential. Progress with 5x5 linear periodisation - add weight every session.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-compress-alt"></i></div><div><p class="ex-title">Front Squat</p><p class="ex-meta">Quads - Core Dominant</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">4 Sets</span><span class="stat-badge stat-reps">6 Reps</span><span class="stat-badge stat-rest">2 min Rest</span></div><div class="exercise-desc">Bar rests on front deltoids, elbows high. Requires excellent ankle mobility and core bracing. More quad dominant than back squat and demands strict upright torso - exposes and fixes weaknesses that back squat can hide.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-running"></i></div><div><p class="ex-title">HIIT Circuit</p><p class="ex-meta">Fat Loss - Conditioning</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">5 Rounds</span><span class="stat-badge stat-dur">40s on / 20s off</span></div><div class="exercise-desc">Burpees, Box Jumps, Kettlebell Swings, Battle Ropes, Sprint. 40 seconds max effort, 20 seconds rest between exercises. 5 complete rounds with 90s rest between rounds. EPOC burns calories for 24-48 hours post-session.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-hand-rock"></i></div><div><p class="ex-title">Weighted Dips</p><p class="ex-meta">Chest - Triceps - Anterior Delts</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">4 Sets</span><span class="stat-badge stat-reps">8-10 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Use a dip belt with added plates. Lower until upper arms are parallel to floor, press back up. Lean slightly forward to emphasise chest. One of the best pressing movements for developing thickness in the lower chest and triceps.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-arrow-up"></i></div><div><p class="ex-title">Weighted Pull-Ups</p><p class="ex-meta">Back Width - Biceps</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">4 Sets</span><span class="stat-badge stat-reps">6-8 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Add a weight belt with plates. Dead hang start, pull until chin is over bar, lower with full control - 3 seconds down. Weighted pull-ups are arguably the best upper body exercise for building a wide, powerful back.</div></div></div>
+                    <div class="col-md-6"><div class="exercise-card" style="border-left:4px solid #ef4444;" onclick="toggleCard(this)"><div class="card-header-row"><div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(239,68,68,.12);color:var(--accent-red);"><i class="fas fa-ruler-horizontal"></i></div><div><p class="ex-title">Dragon Flags</p><p class="ex-meta">Core - Advanced Abs</p></div></div><i class="fas fa-chevron-down expand-arrow"></i></div><div><span class="stat-badge stat-sets">3 Sets</span><span class="stat-badge stat-reps">5-8 Reps</span><span class="stat-badge stat-rest">90s Rest</span></div><div class="exercise-desc">Lie on a bench, grip behind head. Lift your entire body up on your shoulders, keeping it straight like a plank, then lower slowly without touching the bench. Made famous by Bruce Lee. Requires exceptional core strength and body control.</div></div></div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end content-body -->
+</div><!-- end main-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// CHECKLIST
+const checklistItems = [
+    { id:'warm', icon:'&#x1F525;', label:'Warm-Up Complete',       meta:'5-10 min cardio'    },
+    { id:'str',  icon:'&#x1F300;', label:'Dynamic Stretching',     meta:'5 exercises done'   },
+    { id:'sq',   icon:'&#x1F9B5;', label:'Bodyweight Squats',      meta:'3 x 10 reps'        },
+    { id:'pu',   icon:'&#x1F4AA;', label:'Push-ups',               meta:'3 x 8 reps'         },
+    { id:'cp',   icon:'&#x1F3CB;', label:'Chest Press Machine',    meta:'3 x 10 reps'        },
+    { id:'lp',   icon:'&#x2B07;&#xFE0F;', label:'Lat Pulldown',   meta:'3 x 10 reps'        },
+    { id:'sr',   icon:'&#x1F6A3;', label:'Seated Row',             meta:'3 x 10 reps'        },
+    { id:'sp',   icon:'&#x261D;&#xFE0F;', label:'Shoulder Press', meta:'3 x 10 reps'        },
+    { id:'pl',   icon:'&#x1F4CF;', label:'Plank',                  meta:'3 x 30 sec'         },
+    { id:'cd',   icon:'&#x2744;&#xFE0F;', label:'Cool Down Done', meta:'Stretch + breathe'  },
+];
+
+let checkedItems = new Set(JSON.parse(localStorage.getItem('gymGuideChecklist') || '[]'));
+
+function renderChecklist() {
+    const c = document.getElementById('checklist-container');
+    c.innerHTML = '';
+    checklistItems.forEach(item => {
+        const checked = checkedItems.has(item.id);
+        const div = document.createElement('div');
+        div.className = 'checklist-item' + (checked ? ' checked' : '');
+        div.onclick = () => toggleCheck(item.id);
+        div.innerHTML = '<div class="check-circle"><i class="fas fa-check"></i></div>'
+            + '<div class="flex-grow-1"><div class="check-label">' + item.icon + ' ' + item.label + '</div><div class="check-meta">' + item.meta + '</div></div>';
+        c.appendChild(div);
+    });
+    updateProgress();
+}
+
+function toggleCheck(id) {
+    checkedItems.has(id) ? checkedItems.delete(id) : checkedItems.add(id);
+    localStorage.setItem('gymGuideChecklist', JSON.stringify([...checkedItems]));
+    renderChecklist();
+}
+
+function resetChecklist() {
+    checkedItems.clear();
+    localStorage.removeItem('gymGuideChecklist');
+    renderChecklist();
+}
+
+function updateProgress() {
+    const total = checklistItems.length;
+    const done  = checkedItems.size;
+    const pct   = Math.round((done / total) * 100);
+    const circumference = 289;
+    const offset = circumference - (pct / 100) * circumference;
+
+    document.getElementById('ring-pct').textContent = pct + '%';
+    document.getElementById('progress-circle').style.strokeDashoffset = offset;
+    document.getElementById('progress-bar-fill').style.width = pct + '%';
+    document.getElementById('progress-pct-text').textContent = pct + '%';
+    document.getElementById('stat-completed').textContent = done;
+    document.getElementById('stat-remaining').textContent = total - done;
+
+    const s = document.getElementById('stat-status');
+    if      (done === 0)     { s.textContent = 'Not Started'; s.style.color = 'var(--accent-blue)'; }
+    else if (done < total)   { s.textContent = 'In Progress'; s.style.color = '#f59e0b'; }
+    else                     { s.textContent = 'Completed!';  s.style.color = 'var(--accent-green)'; }
+}
+
+// EXERCISE CARDS
+function toggleCard(card) { card.classList.toggle('expanded'); }
+
+// LEVEL TABS
+function switchLevel(level) {
+    ['beginner','intermediate','advanced'].forEach(l => {
+        document.getElementById('level-' + l).classList.remove('active');
+        const t = document.getElementById('tab-' + l);
+        t.classList.remove('active-beginner','active-intermediate','active-advanced');
+    });
+    document.getElementById('level-' + level).classList.add('active');
+    document.getElementById('tab-' + level).classList.add('active-' + level);
+}
+
+// TIMER
+let timerInterval = null, timerRunning = false, timerSeconds = 0, timerPreset = 0, timerCountdown = false;
+
+function timerSetPreset(secs, btnId) {
+    timerReset();
+    timerPreset = secs; timerSeconds = secs; timerCountdown = true;
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+    updateTimerDisplay();
+    document.getElementById('timer-label').textContent = 'Ready to countdown';
+}
+
+function timerToggle() {
+    if (timerRunning) {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('timer-icon').className = 'fas fa-play';
+        document.getElementById('timer-label').textContent = 'Paused';
+    } else {
+        timerRunning = true;
+        document.getElementById('timer-icon').className = 'fas fa-pause';
+        if (timerCountdown) {
+            document.getElementById('timer-label').textContent = 'Counting down...';
+            timerInterval = setInterval(() => {
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval); timerRunning = false;
+                    document.getElementById('timer-icon').className = 'fas fa-play';
+                    document.getElementById('timer-label').textContent = 'Time is up!';
+                    return;
+                }
+                timerSeconds--; updateTimerDisplay();
+            }, 1000);
+        } else {
+            document.getElementById('timer-label').textContent = 'Counting up...';
+            timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
+        }
+    }
+}
+
+function timerReset() {
+    clearInterval(timerInterval); timerRunning = false; timerSeconds = timerPreset; timerCountdown = timerPreset > 0;
+    document.getElementById('timer-icon').className = 'fas fa-play';
+    document.getElementById('timer-label').textContent = timerPreset > 0 ? 'Ready to countdown' : 'Ready';
+    updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+    const m = String(Math.floor(timerSeconds / 60)).padStart(2,'0');
+    const s = String(timerSeconds % 60).padStart(2,'0');
+    document.getElementById('timer-display').textContent = m + ':' + s;
+}
+
+// TIPS
+const tips = [
+    { headline:'Progressive Overload is Key', body:'Increase your weights, reps, or sets slightly every 1-2 weeks. Your muscles only grow when challenged with increasing demands.', badge:'Strength Tip' },
+    { headline:'Protein is Your Best Friend', body:'Aim for 1.6-2.2g of protein per kg of bodyweight daily. Chicken, eggs, paneer, lentils, and whey are excellent sources.', badge:'Nutrition Tip' },
+    { headline:'Sleep = Muscle Growth', body:'7-9 hours of quality sleep is when your body releases growth hormone and repairs torn muscle fibres. Poor sleep equals poor gains.', badge:'Recovery Tip' },
+    { headline:'Track Your Workouts', body:'Keep a simple log of sets, reps, and weights each session. Seeing progress on paper is powerful motivation and guides your progression.', badge:'Habit Tip' },
+    { headline:'Mind-Muscle Connection', body:'Focus on feeling the target muscle contract during each rep. Studies show this significantly improves muscle activation and growth.', badge:'Training Tip' },
+    { headline:"Don't Compare Your Chapter 1", body:"Everyone at the gym started as a beginner. Focus on your own progress. The person you see with great results has been training for years.", badge:'Mindset Tip' },
+    { headline:'Compound Movements First', body:'Always do your big compound lifts (squat, press, row, deadlift) at the start of your session when you have the most energy and focus.', badge:'Programming Tip' },
+    { headline:'Consistency Beats Perfection', body:'A good enough workout done consistently is 100x better than a perfect workout done rarely. Show up, even when motivation is low.', badge:'Mindset Tip' },
+];
+let tipIndex = Math.floor(Math.random() * tips.length);
+function showTip() {
+    const t = tips[tipIndex];
+    document.getElementById('tip-headline').textContent = t.headline;
+    document.getElementById('tip-body').textContent = t.body;
+    document.getElementById('tip-badge').textContent = t.badge;
+}
+function nextTip() { tipIndex = (tipIndex + 1) % tips.length; showTip(); }
+
+// AUTH
+function logout() { localStorage.removeItem('jwtToken'); localStorage.removeItem('userRole'); window.location.href = '/login.html'; }
+
+function loadUsername() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return;
+    fetch('/api/members/profile', { headers:{ 'Authorization':'Bearer ' + token } })
+        .then(r => r.json()).then(d => { if (d && d.fullName) document.getElementById('nav-username').textContent = d.fullName.split(' ')[0]; })
+        .catch(() => {});
+}
+
+// WATER TRACKER
+let waterAmount = parseInt(localStorage.getItem('gymGuideWater') || '500');
+const waterGoal = 2000;
+
+function updateWaterUI() {
+    const pct = Math.min(100, Math.round((waterAmount / waterGoal) * 100));
+    document.getElementById('water-logged-text').textContent = waterAmount + ' ml / 2,000 ml';
+    document.getElementById('water-pct-badge').textContent = pct + '%';
+    document.getElementById('water-bar-fill').style.width = pct + '%';
+}
+
+function addWater(ml) {
+    waterAmount = Math.min(waterGoal, waterAmount + ml);
+    localStorage.setItem('gymGuideWater', waterAmount.toString());
+    updateWaterUI();
+}
+
+function resetWater() {
+    waterAmount = 0;
+    localStorage.removeItem('gymGuideWater');
+    updateWaterUI();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadUsername();
+    renderChecklist();
+    showTip();
+    updateTimerDisplay();
+    updateWaterUI();
+});
+</script>
+</body>
+</html>

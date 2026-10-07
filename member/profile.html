@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot-widget.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li class="active"><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
+            <li><a href="/member/classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
+            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">My Personal Profile</h4>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small">Signed in as:</span>
+                <span id="nav-profile-username" class="fw-bold">Member</span>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            
+            <div class="row g-4">
+                
+                <!-- Left: Profile Summary Card -->
+                <div class="col-lg-4 animate-fade-in">
+                    <div class="glass-panel p-4 text-center">
+                        <div class="bg-blue-accent metric-icon rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 id="summary-fullName" class="fw-bold mb-1">Loading...</h4>
+                        <span id="summary-role" class="badge bg-secondary mb-4">MEMBER</span>
+
+                        <div class="text-start border-top border-secondary pt-3">
+                            <p class="mb-1 text-secondary small"><i class="fas fa-gem me-2 text-accent"></i>Active Plan: <strong id="summary-plan" class="text-white">None</strong></p>
+                            <p class="mb-0 text-secondary small"><i class="fas fa-clock me-2 text-accent"></i>Expires On: <strong id="summary-expiry" class="text-white">N/A</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Profile Details Form -->
+                <div class="col-lg-8 animate-fade-in" style="animation-delay: 0.05s;">
+                    <div class="glass-panel p-4">
+                        <h5 class="fw-bold mb-4">Edit Profile Settings</h5>
+                        <form id="profile-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">Full Name</label>
+                                    <input type="text" class="form-control" id="profile-fullName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">Email Address</label>
+                                    <input type="email" class="form-control" id="profile-email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">Phone Number</label>
+                                    <input type="text" class="form-control" id="profile-phone">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-bold">Gender</label>
+                                    <select class="form-select" id="profile-gender">
+                                        <option value="MALE">Male</option>
+                                        <option value="FEMALE">Female</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label text-secondary small fw-bold">Date of Birth</label>
+                                    <input type="date" class="form-control" id="profile-dob">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small fw-bold">Home Address</label>
+                                    <input type="text" class="form-control" id="profile-address">
+                                </div>
+
+                                <h6 class="fw-bold border-bottom pb-2 border-secondary mb-2 mt-4">Emergency Contacts</h6>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">Contact Name</label>
+                                    <input type="text" class="form-control" id="profile-emergencyContact">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary small fw-bold">Contact Phone Number</label>
+                                    <input type="text" class="form-control" id="profile-emergencyPhone">
+                                </div>
+
+                                <div class="col-12 text-end mt-4">
+                                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save me-2"></i>Update Profile</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_MEMBER');
+        loadNavbarProfile();
+
+        const memberId = getProfileId();
+
+        async function loadProfile() {
+            try {
+                const response = await fetchWithAuth(`/member/${memberId}`);
+                if (!response) return;
+
+                const m = await response.json();
+
+                // Populate Summary
+                document.getElementById('summary-fullName').textContent = m.fullName;
+                document.getElementById('summary-plan').textContent = m.membershipPlanName || 'None';
+                document.getElementById('summary-expiry').textContent = m.membershipExpiryDate ? new Date(m.membershipExpiryDate).toLocaleDateString() : 'N/A';
+
+                // Populate Form
+                document.getElementById('profile-fullName').value = m.fullName;
+                document.getElementById('profile-email').value = m.email;
+                document.getElementById('profile-phone').value = m.phone || '';
+                document.getElementById('profile-gender').value = m.gender || 'MALE';
+                document.getElementById('profile-dob').value = m.dob || '';
+                document.getElementById('profile-address').value = m.address || '';
+                document.getElementById('profile-emergencyContact').value = m.emergencyContact || '';
+                document.getElementById('profile-emergencyPhone').value = m.emergencyPhone || '';
+
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to load profile details.', 'error');
+            }
+        }
+
+        // Form Submit
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                fullName: document.getElementById('profile-fullName').value,
+                email: document.getElementById('profile-email').value,
+                phone: document.getElementById('profile-phone').value,
+                gender: document.getElementById('profile-gender').value,
+                dob: document.getElementById('profile-dob').value || null,
+                address: document.getElementById('profile-address').value,
+                emergencyContact: document.getElementById('profile-emergencyContact').value,
+                emergencyPhone: document.getElementById('profile-emergencyPhone').value
+            };
+
+            try {
+                const response = await fetchWithAuth(`/member/${memberId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+
+                if (response && response.ok) {
+                    showToast('Profile updated successfully!', 'success');
+                    
+                    // Update header name
+                    localStorage.setItem('gym_username', data.fullName);
+                    loadNavbarProfile();
+
+                    loadProfile();
+                } else {
+                    showToast('Update failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Network error.', 'error');
+            }
+        });
+
+        // Load
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+    <!-- AI Gym Assistant Floating Widget -->
+    <script src="/js/chatbot-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="/admin/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/admin/members.html"><i class="fas fa-users"></i>Members</a></li>
+            <li><a href="/admin/trainers.html"><i class="fas fa-user-tie"></i>Trainers</a></li>
+            <li><a href="/admin/plans.html"><i class="fas fa-gem"></i>Plans</a></li>
+            <li><a href="/admin/classes-management.html"><i class="fas fa-calendar-alt"></i>Classes</a></li>
+            <li><a href="/admin/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/admin/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/admin/reports.html"><i class="fas fa-file-invoice-dollar"></i>Reports</a></li>
+            <li><a href="/admin/chat-logs.html"><i class="fas fa-robot"></i>AI Chat Logs</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-secondary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h4 class="m-0 fw-bold">Dashboard Summary</h4>
+            </div>
+            <div class="d-flex align-items-center gap-4">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary small">Signed in as:</span>
+                    <span id="nav-profile-username" class="fw-bold">Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body">
+            
+            <!-- Expiry Warning Alert -->
+            <div id="expiry-warning-banner" class="alert alert-warning border-0 glass-panel mb-4 d-none animate-fade-in" role="alert" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3) !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2 text-warning">
+                        <i class="fas fa-exclamation-triangle fs-5"></i>
+                        <span>Attention: <strong id="expiring-soon-count">0</strong> memberships are expiring in the next 7 days!</span>
+                    </div>
+                    <a href="/admin/members.html?status=expiring" class="btn btn-warning btn-sm fw-bold">Review Expansions</a>
+                </div>
+            </div>
+
+            <!-- Summary KPI Grid -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-lg-3 animate-fade-in">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Total Members</h3>
+                            <h2 id="stat-total-members">0</h2>
+                        </div>
+                        <div class="metric-icon bg-blue-accent">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-fade-in" style="animation-delay: 0.05s;">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Active Subscriptions</h3>
+                            <h2 id="stat-active-members">0</h2>
+                        </div>
+                        <div class="metric-icon bg-green-accent">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Total Trainers</h3>
+                            <h2 id="stat-total-trainers">0</h2>
+                        </div>
+                        <div class="metric-icon bg-purple-accent">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-fade-in" style="animation-delay: 0.15s;">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Total Revenue</h3>
+                            <h2 id="stat-total-revenue">₹0.00</h2>
+                        </div>
+                        <div class="metric-icon bg-teal-accent">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Activity logs row -->
+            <div class="row g-4 mb-4">
+                <!-- Revenue Chart -->
+                <div class="col-xl-8 animate-fade-in">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h5 class="m-0 fw-bold">Revenue Yield Analytics (This Year)</h5>
+                            <i class="fas fa-chart-line text-secondary"></i>
+                        </div>
+                        <div style="height: 300px;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Checkins -->
+                <div class="col-xl-4 animate-fade-in">
+                    <div class="glass-panel p-4 h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h5 class="m-0 fw-bold">Today's Check-ins</h5>
+                            <a href="/admin/attendance.html" class="text-accent text-decoration-none small">View all</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-table small">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-attendance-body">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-secondary py-4">No check-ins today</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions Table -->
+            <div class="glass-panel p-4 animate-fade-in">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h5 class="m-0 fw-bold">Recent Billing Transactions</h5>
+                    <a href="/admin/payments.html" class="text-accent text-decoration-none small">View all logs</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Member Name</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-payments-body">
+                            <tr>
+                                <td colspan="6" class="text-center text-secondary py-4">No recent payments.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check Admin privilege
+        checkAuth('ROLE_ADMIN');
+        loadNavbarProfile();
+
+        // Load dashboard stats
+        let revenueChartInstance = null;
+
+        async function loadStats() {
+            try {
+                const response = await fetchWithAuth('/admin/dashboard-stats');
+                if (!response) return;
+
+                const stats = await response.json();
+
+                // Set KPIs
+                document.getElementById('stat-total-members').textContent = stats.totalMembers;
+                document.getElementById('stat-active-members').textContent = stats.activeMembers;
+                document.getElementById('stat-total-trainers').textContent = stats.totalTrainers;
+                document.getElementById('stat-total-revenue').textContent = '₹' + stats.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                // Set alerts banner
+                if (stats.expiringSoonCount > 0) {
+                    document.getElementById('expiry-warning-banner').classList.remove('d-none');
+                    document.getElementById('expiring-soon-count').textContent = stats.expiringSoonCount;
+                }
+
+                // Render Chart
+                renderRevenueChart(stats.monthlyRevenue);
+
+                // Render Recent Payments
+                const payBody = document.getElementById('recent-payments-body');
+                if (stats.recentPayments && stats.recentPayments.length > 0) {
+                    payBody.innerHTML = stats.recentPayments.map(p => {
+                        const dateFormatted = new Date(p.paymentDate).toLocaleDateString();
+                        return `
+                            <tr>
+                                <td><code class="text-accent">${p.transactionId}</code></td>
+                                <td class="fw-bold">${p.memberName}</td>
+                                <td>₹${p.amount.toFixed(2)}</td>
+                                <td>${dateFormatted}</td>
+                                <td><span class="badge bg-secondary">${p.paymentMethod}</span></td>
+                                <td><span class="badge bg-success">${p.status}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Render Recent Attendance
+                const attBody = document.getElementById('recent-attendance-body');
+                if (stats.recentAttendance && stats.recentAttendance.length > 0) {
+                    attBody.innerHTML = stats.recentAttendance.map(a => {
+                        const time = a.checkInTime ? a.checkInTime.substring(0,5) : 'N/A';
+                        return `
+                            <tr>
+                                <td class="fw-bold">${a.fullName}</td>
+                                <td><i class="far fa-clock me-1 text-secondary"></i>${time}</td>
+                                <td><span class="badge-active">${a.status}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to fetch dashboard analytical trends', 'error');
+            }
+        }
+
+        function renderRevenueChart(monthlyRevenueMap) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            const labels = Object.keys(monthlyRevenueMap).map(key => {
+                const parts = key.split('-');
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                return monthNames[parseInt(parts[1]) - 1];
+            });
+            const dataValues = Object.values(monthlyRevenueMap);
+
+            if (revenueChartInstance) {
+                revenueChartInstance.destroy();
+            }
+
+            revenueChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: dataValues,
+                        borderColor: '#0ea5e9',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Onload
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator & Progress - Gym Fit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-brand"><i class="fas fa-dumbbell"></i><span>GYM FIT</span></div>
+        <ul class="sidebar-menu">
+            <li><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li class="active"><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">BMI Calculator & Body Progress</h4>
+            <span id="nav-profile-username" class="fw-bold"></span>
+        </div>
+
+        <div class="content-body text-start">
+            <div class="row g-4">
+
+                <!-- BMI Calculator Card -->
+                <div class="col-lg-5 animate-fade-in">
+                    <div class="glass-panel p-4">
+                        <h5 class="fw-bold mb-1">Calculate Your BMI</h5>
+                        <p class="text-secondary small mb-4">Enter your current metrics to compute Body Mass Index</p>
+
+                        <form id="progress-form">
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small fw-bold">Weight (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-weight" placeholder="e.g. 72.5" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small fw-bold">Height (meters)</label>
+                                    <input type="number" step="0.01" class="form-control" id="input-height" placeholder="e.g. 1.75" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small fw-bold">Body Fat %</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-bodyfat" placeholder="Optional">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary small fw-bold">Muscle Mass (kg)</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-muscle" placeholder="Optional">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-secondary small fw-bold">Chest (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-chest" placeholder="cm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-secondary small fw-bold">Waist (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-waist" placeholder="cm">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-secondary small fw-bold">Hips (cm)</label>
+                                    <input type="number" step="0.1" class="form-control" id="input-hips" placeholder="cm">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small fw-bold">Notes</label>
+                                    <textarea class="form-control" id="input-notes" rows="2" placeholder="How do you feel today?"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Live BMI Preview -->
+                            <div class="glass-panel p-3 my-4 text-center" id="bmi-display" style="background: rgba(14,165,233,0.05);">
+                                <p class="text-secondary small mb-1">Calculated BMI</p>
+                                <h1 id="bmi-value" class="fw-bold" style="font-size: 3.5rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">--</h1>
+                                <p id="bmi-category" class="fw-bold text-secondary">Enter weight & height above</p>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save me-2"></i>Save Today's Metrics
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- BMI Scale Reference -->
+                    <div class="glass-panel p-4 mt-4">
+                        <h6 class="fw-bold mb-3">BMI Reference Scale</h6>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: rgba(59,130,246,0.15);">
+                                <span class="small">Underweight</span><strong class="text-info">Below 18.5</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: rgba(16,185,129,0.15);">
+                                <span class="small">Normal Weight</span><strong class="text-success">18.5 – 24.9</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: rgba(245,158,11,0.15);">
+                                <span class="small">Overweight</span><strong class="text-warning">25.0 – 29.9</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: rgba(239,68,68,0.15);">
+                                <span class="small">Obese</span><strong class="text-danger">30.0 & Above</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress History Chart & Table -->
+                <div class="col-lg-7 animate-fade-in" style="animation-delay:0.05s;">
+                    <div class="glass-panel p-4 mb-4">
+                        <h5 class="fw-bold mb-4">Weight & BMI Progress Chart</h5>
+                        <div style="height: 250px;"><canvas id="progressChart"></canvas></div>
+                    </div>
+
+                    <div class="glass-panel p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h5 class="fw-bold m-0">Progress Log History</h5>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-table small">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Weight</th>
+                                        <th>Height</th>
+                                        <th>BMI</th>
+                                        <th>Body Fat</th>
+                                        <th>Category</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="progress-table-body">
+                                    <tr><td colspan="7" class="text-center py-4 text-secondary">No records yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_MEMBER');
+        loadNavbarProfile();
+        const memberId = getProfileId();
+        let chartInstance = null;
+
+        // Live BMI calculator
+        function calcBmi() {
+            const w = parseFloat(document.getElementById('input-weight').value);
+            const h = parseFloat(document.getElementById('input-height').value);
+            const bmiEl = document.getElementById('bmi-value');
+            const catEl = document.getElementById('bmi-category');
+
+            if (w > 0 && h > 0) {
+                const bmi = (w / (h * h)).toFixed(2);
+                bmiEl.textContent = bmi;
+                if (bmi < 18.5) { catEl.textContent = '⬇️ Underweight'; catEl.className = 'fw-bold text-info'; }
+                else if (bmi < 25) { catEl.textContent = '✅ Normal Weight'; catEl.className = 'fw-bold text-success'; }
+                else if (bmi < 30) { catEl.textContent = '⚠️ Overweight'; catEl.className = 'fw-bold text-warning'; }
+                else { catEl.textContent = '❌ Obese'; catEl.className = 'fw-bold text-danger'; }
+            } else {
+                bmiEl.textContent = '--';
+                catEl.textContent = 'Enter weight & height above';
+                catEl.className = 'fw-bold text-secondary';
+            }
+        }
+
+        document.getElementById('input-weight').addEventListener('input', calcBmi);
+        document.getElementById('input-height').addEventListener('input', calcBmi);
+
+        async function loadProgressHistory() {
+            try {
+                const res = await fetchWithAuth(`/member/${memberId}/progress`);
+                if (!res) return;
+                const records = await res.json();
+
+                const tbody = document.getElementById('progress-table-body');
+                if (records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-secondary">No progress records logged yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = records.map(r => {
+                    const bmi = parseFloat(r.bmi);
+                    let cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese';
+                    let catClass = bmi < 18.5 ? 'text-info' : bmi < 25 ? 'text-success' : bmi < 30 ? 'text-warning' : 'text-danger';
+                    return `
+                        <tr>
+                            <td>${new Date(r.recordedDate).toLocaleDateString()}</td>
+                            <td><strong>${r.weight} kg</strong></td>
+                            <td>${r.height} m</td>
+                            <td><strong class="text-accent">${r.bmi}</strong></td>
+                            <td>${r.bodyFatPercentage ? r.bodyFatPercentage + '%' : 'N/A'}</td>
+                            <td><span class="${catClass} fw-bold small">${cat}</span></td>
+                            <td><button class="btn btn-outline-danger btn-sm" onclick="deleteRecord(${r.id})"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                renderChart(records);
+
+            } catch (err) { console.error(err); }
+        }
+
+        function renderChart(records) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const labels = records.map(r => new Date(r.recordedDate).toLocaleDateString());
+            const weights = records.map(r => r.weight);
+            const bmis = records.map(r => r.bmi);
+
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Weight (kg)', data: weights, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)', borderWidth: 2, tension: 0.4, fill: true, yAxisID: 'y' },
+                        { label: 'BMI', data: bmis, borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.05)', borderWidth: 2, tension: 0.4, fill: false, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, position: 'left' },
+                        y1: { grid: { display: false }, ticks: { color: '#a855f7' }, position: 'right' },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { labels: { color: '#94a3b8' } } }
+                }
+            });
+        }
+
+        async function deleteRecord(id) {
+            if (!confirm('Delete this progress record?')) return;
+            const res = await fetchWithAuth(`/member/progress/${id}`, { method: 'DELETE' });
+            if (res && res.ok) { showToast('Record deleted.', 'success'); loadProgressHistory(); }
+        }
+
+        document.getElementById('progress-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                memberId: parseInt(memberId),
+                weight: parseFloat(document.getElementById('input-weight').value),
+                height: parseFloat(document.getElementById('input-height').value),
+                bodyFatPercentage: document.getElementById('input-bodyfat').value ? parseFloat(document.getElementById('input-bodyfat').value) : null,
+                muscleMass: document.getElementById('input-muscle').value ? parseFloat(document.getElementById('input-muscle').value) : null,
+                chest: document.getElementById('input-chest').value ? parseFloat(document.getElementById('input-chest').value) : null,
+                waist: document.getElementById('input-waist').value ? parseFloat(document.getElementById('input-waist').value) : null,
+                hips: document.getElementById('input-hips').value ? parseFloat(document.getElementById('input-hips').value) : null,
+                notes: document.getElementById('input-notes').value
+            };
+
+            const res = await fetchWithAuth('/member/progress', { method: 'POST', body: JSON.stringify(data) });
+            if (res && res.ok) {
+                showToast('Progress logged successfully!', 'success');
+                e.target.reset();
+                calcBmi();
+                loadProgressHistory();
+            } else { showToast('Failed to save record.', 'error'); }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadProgressHistory);
+    </script>
+</body>
+</html>

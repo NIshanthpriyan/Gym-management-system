@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Plan Management - Trainer Portal</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/trainer/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/trainer/members.html"><i class="fas fa-users"></i>My Members</a></li>
+            <li><a href="/trainer/workouts.html"><i class="fas fa-running"></i>Workout Plans</a></li>
+            <li class="active"><a href="/trainer/diet-management.html"><i class="fas fa-utensils"></i>Diet Plans</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">🥗 Member Diet Plan Builder</h4>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-diet-plan"><i class="fas fa-plus me-1"></i>Create New Diet Plan</button>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            <div class="glass-panel p-4 mb-4">
+                <h5 class="fw-bold mb-3">All Active Member Diet Plans</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Plan Name</th>
+                                <th>Member Name</th>
+                                <th>Calories</th>
+                                <th>Macros (P / C / F)</th>
+                                <th>Meals Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="diet-plans-table-body">
+                            <tr><td colspan="6" class="text-center text-secondary">Loading diet plans...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create Diet Plan -->
+    <div class="modal fade" id="modal-diet-plan" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold">Create Member Diet Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-diet-plan">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Member</label>
+                                <select id="select-member" class="form-select bg-dark text-white border-secondary" required></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Diet Plan Title</label>
+                                <input type="text" id="input-plan-name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. High Protein Muscle Gain Plan" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Daily Calories (kcal)</label>
+                                <input type="number" id="input-calories" class="form-control bg-dark text-white border-secondary" value="2500" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Protein (g)</label>
+                                <input type="number" id="input-protein" class="form-control bg-dark text-white border-secondary" value="150" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Carbs (g)</label>
+                                <input type="number" id="input-carbs" class="form-control bg-dark text-white border-secondary" value="250" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Fats (g)</label>
+                                <input type="number" id="input-fats" class="form-control bg-dark text-white border-secondary" value="65" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Special Guidelines & Notes</label>
+                            <textarea id="input-notes" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="Drink 3L water daily, avoid sugary drinks..."></textarea>
+                        </div>
+
+                        <hr class="border-secondary">
+                        <h6 class="fw-bold mb-3">Daily Meal Breakdown</h6>
+                        
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-3"><strong>Breakfast</strong></div>
+                            <div class="col-md-7"><input type="text" id="meal-breakfast" class="form-control form-control-sm bg-dark text-white border-secondary" value="4 Egg Whites, 1 Whole Egg, 100g Oats with Almond Milk, 1 Banana"></div>
+                            <div class="col-md-2"><input type="number" id="meal-breakfast-cal" class="form-control form-control-sm bg-dark text-white border-secondary" value="550"></div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-3"><strong>Lunch</strong></div>
+                            <div class="col-md-7"><input type="text" id="meal-lunch" class="form-control form-control-sm bg-dark text-white border-secondary" value="200g Grilled Chicken Breast, 150g Brown Rice, Steamed Broccoli & Salad"></div>
+                            <div class="col-md-2"><input type="number" id="meal-lunch-cal" class="form-control form-control-sm bg-dark text-white border-secondary" value="700"></div>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-3"><strong>Evening Snack</strong></div>
+                            <div class="col-md-7"><input type="text" id="meal-snack" class="form-control form-control-sm bg-dark text-white border-secondary" value="1 Scoop Whey Protein Shake, Handful of Almonds & Walnuts"></div>
+                            <div class="col-md-2"><input type="number" id="meal-snack-cal" class="form-control form-control-sm bg-dark text-white border-secondary" value="350"></div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3"><strong>Dinner</strong></div>
+                            <div class="col-md-7"><input type="text" id="meal-dinner" class="form-control form-control-sm bg-dark text-white border-secondary" value="200g Baked Salmon / Paneer, Mixed Vegetables, 1 Sweet Potato"></div>
+                            <div class="col-md-2"><input type="number" id="meal-dinner-cal" class="form-control form-control-sm bg-dark text-white border-secondary" value="600"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Save & Assign Diet Plan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_TRAINER', 'ROLE_ADMIN');
+        loadNavbarProfile();
+
+        async function loadData() {
+            try {
+                // Fetch members for dropdown
+                const mRes = await fetchWithAuth('/members');
+                const members = await mRes.json();
+                const sel = document.getElementById('select-member');
+                sel.innerHTML = members.map(m => `<option value="${m.id}">${m.user.fullName} (${m.user.email})</option>`).join('');
+
+                // Fetch diet plans
+                const dRes = await fetchWithAuth('/diet-plans');
+                const plans = await dRes.json();
+                const tbody = document.getElementById('diet-plans-table-body');
+
+                if (plans.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">No diet plans created yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = plans.map(p => `
+                    <tr>
+                        <td class="fw-bold text-accent">${p.planName}</td>
+                        <td>${p.member ? p.member.user.fullName : 'N/A'}</td>
+                        <td><span class="badge bg-primary">${p.caloriesPerDay} kcal</span></td>
+                        <td>${p.proteinGrams}g P / ${p.carbsGrams}g C / ${p.fatsGrams}g F</td>
+                        <td>${p.meals ? p.meals.length : 0} Meals</td>
+                        <td>
+                            <button onclick="deletePlan(${p.id})" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('form-diet-plan').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                memberId: document.getElementById('select-member').value,
+                planName: document.getElementById('input-plan-name').value,
+                caloriesPerDay: document.getElementById('input-calories').value,
+                proteinGrams: document.getElementById('input-protein').value,
+                carbsGrams: document.getElementById('input-carbs').value,
+                fatsGrams: document.getElementById('input-fats').value,
+                notes: document.getElementById('input-notes').value,
+                meals: [
+                    { mealType: 'BREAKFAST', foodItems: document.getElementById('meal-breakfast').value, calories: document.getElementById('meal-breakfast-cal').value },
+                    { mealType: 'LUNCH', foodItems: document.getElementById('meal-lunch').value, calories: document.getElementById('meal-lunch-cal').value },
+                    { mealType: 'SNACK', foodItems: document.getElementById('meal-snack').value, calories: document.getElementById('meal-snack-cal').value },
+                    { mealType: 'DINNER', foodItems: document.getElementById('meal-dinner').value, calories: document.getElementById('meal-dinner-cal').value }
+                ]
+            };
+
+            try {
+                const res = await fetchWithAuth('/diet-plans', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res && res.ok) {
+                    showToast('Diet plan saved & assigned!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('modal-diet-plan')).hide();
+                    loadData();
+                } else {
+                    showToast('Failed to create diet plan', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        async function deletePlan(id) {
+            if (!confirm('Delete this diet plan?')) return;
+            try {
+                const res = await fetchWithAuth(`/diet-plans/${id}`, { method: 'DELETE' });
+                if (res && res.ok) {
+                    showToast('Diet plan deleted', 'info');
+                    loadData();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

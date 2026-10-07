@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracking - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/admin/members.html"><i class="fas fa-users"></i>Members</a></li>
+            <li><a href="/admin/trainers.html"><i class="fas fa-user-tie"></i>Trainers</a></li>
+            <li><a href="/admin/plans.html"><i class="fas fa-gem"></i>Plans</a></li>
+            <li class="active"><a href="/admin/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/admin/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/admin/reports.html"><i class="fas fa-file-invoice-dollar"></i>Reports</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">Attendance Tracking</h4>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-success btn-sm px-3" data-bs-toggle="modal" data-bs-target="#qrScanModal">
+                    <i class="fas fa-qrcode me-2"></i>QR Code Scan Check-In
+                </button>
+                <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#manualCheckInModal">
+                    <i class="fas fa-sign-in-alt me-2"></i>Manual Entry
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body">
+            
+            <!-- Filters -->
+            <div class="glass-panel p-4 mb-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary small fw-bold">Specific Date</label>
+                        <input type="date" id="filter-date" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary small fw-bold">Or Range Start</label>
+                        <input type="date" id="filter-start" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-secondary small fw-bold">Range End</label>
+                        <input type="date" id="filter-end" class="form-control">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                        <button class="btn btn-outline-secondary" id="btn-reset">Reset</button>
+                        <button class="btn btn-secondary" id="btn-filter"><i class="fas fa-filter me-2"></i>Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Table -->
+            <div class="glass-panel p-4">
+                <div class="table-responsive">
+                    <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Date</th>
+                                <th>Check-in Time</th>
+                                <th>Check-out Time</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-secondary">Loading attendance data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- QR SCAN MODAL -->
+    <div class="modal fade" id="qrScanModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-qrcode me-2 text-success"></i>Instant QR Code Scanner Check-In</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="qr-scan-form">
+                    <div class="modal-body p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-qrcode fa-4x text-success mb-3 animate-pulse"></i>
+                            <p class="text-secondary small">Scan member digital QR pass or enter Member QR Code (e.g. <code>GYM-MEMBER-1</code> or Member User ID):</p>
+                        </div>
+                        <input type="text" id="qr-code-input" class="form-control form-control-lg text-center bg-dark text-white border-secondary fw-bold" placeholder="GYM-MEMBER-1" autofocus required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success fw-bold">Scan & Record Check-In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MANUAL CHECKIN MODAL -->
+    <div class="modal fade" id="manualCheckInModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-sign-in-alt me-2 text-accent"></i>Manual Attendance Log</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="manual-checkin-form">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Select Active Member</label>
+                            <select class="form-select" id="checkin-member-select" required>
+                                <option value="">Select Member...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Action Type</label>
+                            <select class="form-select" id="checkin-action-type" required>
+                                <option value="IN">Check-In Today</option>
+                                <option value="OUT">Check-Out Today</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_ADMIN');
+        loadNavbarProfile();
+
+        // Default: today
+        document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
+
+        async function loadMembersDropdown() {
+            try {
+                const response = await fetchWithAuth('/admin/members?size=100');
+                const data = await response.json();
+                const select = document.getElementById('checkin-member-select');
+                
+                select.innerHTML = '<option value="">Select Member...</option>' + 
+                    data.content.map(m => `<option value="${m.userId}">${m.fullName} (User ID: ${m.userId})</option>`).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadAttendance() {
+            const tableBody = document.getElementById('attendance-table-body');
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-secondary"><i class="fas fa-spinner fa-spin me-2"></i>Loading logs...</td></tr>`;
+
+            const date = document.getElementById('filter-date').value;
+            const start = document.getElementById('filter-start').value;
+            const  end = document.getElementById('filter-end').value;
+
+            let queryParams = '';
+            if (date) {
+                queryParams = `?date=${date}`;
+            } else if (start && end) {
+                queryParams = `?startDate=${start}&endDate=${end}`;
+            }
+
+            try {
+                const response = await fetchWithAuth(`/admin/attendance${queryParams}`);
+                if (!response) return;
+
+                const logs = await response.json();
+
+                if (logs.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-secondary">No attendance logs found.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = logs.map(a => {
+                    const checkin = a.checkInTime ? a.checkInTime.substring(0, 8) : 'N/A';
+                    const checkout = a.checkOutTime ? a.checkOutTime.substring(0, 8) : 'N/A';
+                    const dateFormatted = new Date(a.date).toLocaleDateString();
+                    
+                    let roleBadge = a.role === 'ROLE_ADMIN' ? 'bg-danger' : (a.role === 'ROLE_TRAINER' ? 'bg-purple' : 'bg-primary');
+                    let cleanRole = a.role ? a.role.replace('ROLE_', '') : 'MEMBER';
+
+                    // Actions
+                    let checkoutBtn = '';
+                    if (a.date === new Date().toISOString().split('T')[0] && !a.checkOutTime) {
+                        checkoutBtn = `<button class="btn btn-sm btn-outline-primary" onclick="forceCheckOut(${a.userId})"><i class="fas fa-sign-out-alt me-1"></i>Check Out</button>`;
+                    }
+
+                    return `
+                        <tr>
+                            <td class="fw-bold">${a.fullName}</td>
+                            <td><span class="badge ${roleBadge}">${cleanRole}</span></td>
+                            <td>${dateFormatted}</td>
+                            <td><i class="far fa-clock me-1 text-secondary"></i>${checkin}</td>
+                            <td><i class="far fa-clock me-1 text-secondary"></i>${checkout}</td>
+                            <td><span class="badge-active">${a.status}</span></td>
+                            <td class="text-end">${checkoutBtn}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-danger">Failed to fetch logs.</td></tr>`;
+            }
+        }
+
+        // Force check out
+        async function forceCheckOut(userId) {
+            try {
+                const response = await fetchWithAuth(`/admin/attendance/check-out/${userId}`, {
+                    method: 'POST'
+                });
+
+                if (response && response.ok) {
+                    showToast('Successfully checked out user!', 'success');
+                    loadAttendance();
+                } else {
+                    showToast('Check-out failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Network error.', 'error');
+            }
+        }
+
+        // QR Scan check-in form submission
+        document.getElementById('qr-scan-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const qrCode = document.getElementById('qr-code-input').value;
+            try {
+                const response = await fetchWithAuth('/admin/attendance/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qrCode })
+                });
+
+                if (response && response.ok) {
+                    showToast('QR Code Scan Check-In Success!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('qrScanModal')).hide();
+                    document.getElementById('qr-code-input').value = '';
+                    loadAttendance();
+                } else if (response) {
+                    const errorMsg = await response.text();
+                    showToast(errorMsg || 'Scan check-in failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Server error.', 'error');
+            }
+        });
+
+        // Manual check-in form submission
+        document.getElementById('manual-checkin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('checkin-member-select').value;
+            const action = document.getElementById('checkin-action-type').value;
+
+            const endpoint = action === 'IN' 
+                ? `/admin/attendance/check-in/${userId}` 
+                : `/admin/attendance/check-out/${userId}`;
+
+            try {
+                const response = await fetchWithAuth(endpoint, {
+                    method: 'POST'
+                });
+
+                if (response && response.ok) {
+                    showToast('Attendance logged successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('manualCheckInModal')).hide();
+                    loadAttendance();
+                } else if (response) {
+                    const error = await response.json();
+                    showToast(error.message || 'Log failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Server error.', 'error');
+            }
+        });
+
+        // Trigger filters
+        document.getElementById('btn-filter').addEventListener('click', loadAttendance);
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('filter-start').value = '';
+            document.getElementById('filter-end').value = '';
+            loadAttendance();
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMembersDropdown();
+            loadAttendance();
+        });
+    </script>
+</body>
+</html>

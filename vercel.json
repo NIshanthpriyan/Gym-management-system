@@ -1,8 +1,11 @@
 {
-  "version": 2,
-  "outputDirectory": "src/main/resources/static",
   "cleanUrls": true,
+  "trailingSlash": false,
   "routes": [
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/$1"

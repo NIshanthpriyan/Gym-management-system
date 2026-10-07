@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-in-One Member Portal - Gym Fit</title>
+    <meta name="description" content="All-in-One unified member dashboard for Gym Fit management system.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .portal-tab { display: none; }
+        .portal-tab.active { display: block; animation: fadeIn .3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Level Tabs */
+        .level-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+        .level-tab {
+            padding:10px 24px; border-radius:30px; border:1px solid var(--border-color);
+            background:transparent; color:var(--text-secondary); font-weight:600; font-size:14px;
+            cursor:pointer; transition:var(--transition); font-family:'Outfit',sans-serif;
+        }
+        .level-tab:hover { border-color:var(--accent-blue); color:var(--accent-blue); }
+        .level-tab.active-beginner      { background:linear-gradient(135deg,#10b981,#14b8a6); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(16,185,129,.35); }
+        .level-tab.active-intermediate  { background:linear-gradient(135deg,#f59e0b,#f97316); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(245,158,11,.35); }
+        .level-tab.active-advanced      { background:linear-gradient(135deg,#ef4444,#a855f7); color:#fff; border-color:transparent; box-shadow:0 4px 15px rgba(239,68,68,.35); }
+
+        .exercise-card {
+            background:rgba(15,23,42,.5); border:1px solid var(--border-color); border-radius:14px;
+            padding:18px 20px; transition:var(--transition); cursor:pointer; position:relative; overflow:hidden;
+        }
+        .exercise-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:4px 0 0 4px; }
+        .exercise-card.warmup-card::before   { background:linear-gradient(180deg,#f59e0b,#f97316); }
+        .exercise-card.stretch-card::before  { background:linear-gradient(180deg,#14b8a6,#0ea5e9); }
+        .exercise-card.workout-card::before  { background:linear-gradient(180deg,#a855f7,#0ea5e9); }
+        .exercise-card.cooldown-card::before { background:linear-gradient(180deg,#10b981,#14b8a6); }
+        .exercise-card:hover { border-color:rgba(255,255,255,.15); background:rgba(15,23,42,.75); transform:translateX(4px); }
+        .exercise-card .card-header-row { display:flex; align-items:center; justify-content:space-between; }
+        .exercise-card .ex-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-right:14px; flex-shrink:0; }
+        .exercise-card .ex-title { font-weight:600; font-size:15px; margin:0; }
+        .exercise-card .ex-meta  { font-size:12px; color:var(--text-secondary); margin:3px 0 0 0; }
+        .exercise-card .expand-arrow { color:var(--text-muted); transition:var(--transition); font-size:14px; }
+        .exercise-card.expanded .expand-arrow { transform:rotate(180deg); color:var(--accent-blue); }
+        .exercise-desc { display:none; padding-top:14px; margin-top:14px; border-top:1px solid var(--border-color); font-size:13.5px; color:var(--text-secondary); line-height:1.7; }
+        .exercise-card.expanded .exercise-desc { display:block; }
+
+        .stat-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; margin-right:6px; margin-top:8px; }
+        .stat-sets  { background:rgba(168,85,247,.15); color:var(--accent-purple); border:1px solid rgba(168,85,247,.25); }
+        .stat-reps  { background:rgba(14,165,233,.15);  color:var(--accent-blue);   border:1px solid rgba(14,165,233,.25); }
+        .stat-rest  { background:rgba(16,185,129,.15);  color:var(--accent-green);  border:1px solid rgba(16,185,129,.25); }
+        .stat-dur   { background:rgba(245,158,11,.15);  color:#f59e0b;              border:1px solid rgba(245,158,11,.25); }
+
+        .workout-progress-bar  { height:8px; background:rgba(255,255,255,.06); border-radius:10px; overflow:hidden; }
+        .workout-progress-fill { height:100%; border-radius:10px; background:var(--gradient-primary); transition:width .5s ease; }
+
+        .checklist-item { display:flex; align-items:center; gap:14px; padding:14px 16px; background:rgba(15,23,42,.4); border:1px solid var(--border-color); border-radius:12px; transition:var(--transition); cursor:pointer; }
+        .checklist-item:hover { border-color:rgba(255,255,255,.12); }
+        .checklist-item.checked { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.25); }
+        .checklist-item.checked .check-circle { background:var(--accent-green); border-color:var(--accent-green); }
+        .checklist-item.checked .check-circle i { opacity:1; }
+        .checklist-item.checked .check-label { text-decoration:line-through; color:var(--text-muted); }
+        .check-circle { width:24px; height:24px; border-radius:50%; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:var(--transition); }
+        .check-circle i { font-size:11px; color:#fff; opacity:0; transition:var(--transition); }
+        .check-label { font-weight:500; font-size:14px; }
+        .check-meta  { font-size:12px; color:var(--text-secondary); }
+
+        .timer-display { font-size:52px; font-weight:800; background:var(--gradient-primary); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; line-height:1; }
+        .timer-label   { font-size:13px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
+        .timer-btn { width:52px; height:52px; border-radius:50%; border:none; font-size:20px; cursor:pointer; transition:var(--transition); display:flex; align-items:center; justify-content:center; font-family:'Outfit',sans-serif; }
+        .timer-btn-play  { background:var(--gradient-primary); color:#fff; }
+        .timer-btn-reset { background:rgba(239,68,68,.15); color:var(--accent-red); border:1px solid rgba(239,68,68,.25); }
+        .timer-btn:hover { transform:scale(1.08); }
+        .preset-btn { padding:6px 14px; border-radius:20px; border:1px solid var(--border-color); background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:var(--transition); font-family:'Outfit',sans-serif; }
+        .preset-btn:hover,.preset-btn.active { background:rgba(14,165,233,.15); color:var(--accent-blue); border-color:rgba(14,165,233,.3); }
+
+        .tip-card { background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(14,165,233,.08)); border:1px solid rgba(168,85,247,.2); border-radius:16px; padding:24px; }
+        .safety-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-color); }
+        .safety-item:last-child { border-bottom:none; }
+        .safety-icon { width:38px; height:38px; border-radius:10px; background:rgba(239,68,68,.12); color:var(--accent-red); border:1px solid rgba(239,68,68,.2); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
+
+        .completion-ring { width:110px; height:110px; position:relative; flex-shrink:0; }
+        .completion-ring svg { transform:rotate(-90deg); }
+        .completion-ring .ring-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+        .completion-ring .ring-pct  { font-size:22px; font-weight:800; background:var(--gradient-primary); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .completion-ring .ring-done { font-size:11px; color:var(--text-secondary); }
+
+        .level-content { display:none; }
+        .level-content.active { display:block; }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-dumbbell"></i><span>GYM FIT</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li class="active" id="nav-overview"><a href="#" onclick="switchTab('overview')"><i class="fas fa-th-large"></i>Dashboard</a></li>
+        <li id="nav-guide"><a href="#" onclick="switchTab('guide')"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+        <li id="nav-workout"><a href="#" onclick="switchTab('workout')"><i class="fas fa-running"></i>Workout Plan</a></li>
+        <li id="nav-attendance"><a href="#" onclick="switchTab('attendance')"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+        <li id="nav-payments"><a href="#" onclick="switchTab('payments')"><i class="fas fa-credit-card"></i>Payments</a></li>
+        <li id="nav-bmi"><a href="#" onclick="switchTab('bmi')"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+        <li id="nav-profile"><a href="#" onclick="switchTab('profile')"><i class="fas fa-user"></i>Profile</a></li>
+        <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+    </ul>
+</div>
+
+<!-- Main Wrapper -->
+<div class="main-wrapper">
+
+    <!-- Top Navbar -->
+    <div class="navbar-top">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h4 class="m-0 fw-bold" id="page-title-text">
+                <i class="fas fa-layer-group me-2" style="background:var(--gradient-primary);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;"></i>
+                All-in-One Member Portal
+            </h4>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-secondary small">Welcome, <strong id="portal-username" class="text-white">Member</strong></span>
+        </div>
+    </div>
+
+    <!-- Content Body Container -->
+    <div class="content-body">
+
+        <!-- ================= TAB 1: OVERVIEW ================= -->
+        <div class="portal-tab active" id="tab-overview">
+            <div class="glass-panel p-4 mb-4" style="background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(168,85,247,.08));border-color:rgba(14,165,233,.2);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <span class="badge bg-primary text-white mb-2" style="font-size:11px;">ALL-IN-ONE HUB</span>
+                        <h3 class="fw-bold mb-1">Welcome to Your Gym Portal</h3>
+                        <p class="text-secondary mb-0" style="font-size:14px;">Access your Workout Guide, Daily Routines, Attendance, Plan Expiry, and BMI Tracker all in one unified screen!</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <button class="btn btn-primary" onclick="switchTab('guide')"><i class="fas fa-book-open me-2"></i>Open Workout Guide</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Metric Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="glass-panel metric-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-secondary small">Active Membership</span>
+                                <h4 class="fw-bold text-white mb-1" id="dash-plan-name">Monthly Basic</h4>
+                                <span class="badge bg-success">ACTIVE</span>
+                            </div>
+                            <div class="metric-icon bg-blue-accent"><i class="fas fa-gem fs-3"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-panel metric-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-secondary small">Plan Expiry</span>
+                                <h4 class="fw-bold text-white mb-1" id="dash-plan-expiry">Valid</h4>
+                                <span class="text-secondary small">Auto-renews</span>
+                            </div>
+                            <div class="metric-icon bg-purple-accent"><i class="fas fa-clock fs-3"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-panel metric-card p-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-secondary small">Workout Days Logged</span>
+                                <h4 class="fw-bold text-white mb-1" id="dash-attendance-count">12 Days</h4>
+                                <span class="text-success small">+3 this week</span>
+                            </div>
+                            <div class="metric-icon bg-teal-accent"><i class="fas fa-calendar-alt fs-3"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: WORKOUT GUIDE ================= -->
+        <div class="portal-tab" id="tab-guide">
+            <div class="level-content active" id="level-beginner">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- WARM UP -->
+                        <div class="glass-panel p-4 mb-4">
+                            <div class="section-header">
+                                <div class="section-icon" style="background:rgba(245,158,11,.15);color:#f59e0b;"><i class="fas fa-fire-alt"></i></div>
+                                <div><h5 class="section-title">1. Warm-Up Section</h5><p class="section-subtitle">Duration: 5–10 Minutes</p></div>
+                            </div>
+                            <div class="exercise-card warmup-card mb-2" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-walking"></i></div><div><p class="ex-title">Treadmill Walk</p><p class="ex-meta">Cardio Warmup - 5 min</p></div></div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div class="exercise-desc">Walk at light pace on treadmill. Keep back straight and breathe deeply. Elevates heart rate and prepares cardiovascular system.</div>
+                            </div>
+                            <div class="exercise-card warmup-card mb-2" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-bicycle"></i></div><div><p class="ex-title">Stationary Cycle</p><p class="ex-meta">Low Impact - 5 to 7 min</p></div></div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div class="exercise-desc">Pedal smoothly at light resistance to warm up knee joints and lower legs safely.</div>
+                            </div>
+                            <div class="exercise-card warmup-card" onclick="toggleCard(this)">
+                                <div class="card-header-row">
+                                    <div class="d-flex align-items-center"><div class="ex-icon" style="background:rgba(245,158,11,.12);color:#f59e0b;"><i class="fas fa-star"></i></div><div><p class="ex-title">Jumping Jacks</p><p class="ex-meta">2 Sets x 20 Reps</p></div></div>
+                                    <i class="fas fa-chevron-down expand-arrow"></i>
+                                </div>
+                                <div class="exercise-desc">Dynamic full-body warm-up exercise elevating heart rate and motor coordination.</div>
+                            </div>
+                        </div>
+
+                        <!-- WORKOUT TABLE -->
+                        <div class="glass-panel p-4 mb-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-dumbbell me-2 text-purple"></i>Beginner Full Body Routine</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle rounded-3">
+                                    <thead><tr><th>Exercise</th><th class="text-center">Sets</th><th class="text-center">Reps</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>Bodyweight Squats</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                        <tr><td>Push-ups (or Knee Push-ups)</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">8</span></td></tr>
+                                        <tr><td>Chest Press Machine</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                        <tr><td>Lat Pulldown</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                        <tr><td>Seated Row</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                        <tr><td>Shoulder Press Machine</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-secondary">10</span></td></tr>
+                                        <tr><td>Plank</td><td class="text-center"><span class="badge bg-primary">3</span></td><td class="text-center"><span class="badge bg-success">30 Seconds</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDEBAR EXTRAS -->
+                    <div class="col-lg-4">
+                        <!-- TIMER -->
+                        <div class="glass-panel p-4 mb-4">
+                            <h6 class="fw-bold mb-2"><i class="fas fa-stopwatch me-2 text-info"></i>Exercise Timer</h6>
+                            <div class="text-center mb-3">
+                                <div class="timer-display" id="portal-timer-display">00:00</div>
+                                <div class="timer-label" id="portal-timer-label">Ready</div>
+                            </div>
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <button class="timer-btn timer-btn-play" onclick="portalTimerToggle()"><i class="fas fa-play" id="portal-timer-icon"></i></button>
+                                <button class="timer-btn timer-btn-reset" onclick="portalTimerReset()"><i class="fas fa-undo"></i></button>
+                            </div>
+                        </div>
+                        <!-- WATER TRACKER -->
+                        <div class="glass-panel p-4">
+                            <h6 class="fw-bold mb-2"><i class="fas fa-glass-water me-2 text-info"></i>Water Intake</h6>
+                            <p class="text-white fw-bold mb-1" id="portal-water-text">500 ml / 2,000 ml</p>
+                            <div class="workout-progress-bar mb-3"><div class="workout-progress-fill bg-info" id="portal-water-fill" style="width:25%;"></div></div>
+                            <button class="btn btn-sm btn-outline-info w-100" onclick="portalAddWater(250)"><i class="fas fa-plus me-1"></i>Add 250ml</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: WORKOUT PLAN ================= -->
+        <div class="portal-tab" id="tab-workout">
+            <div class="glass-panel p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-running me-2 text-primary"></i>Assigned Workout Plan</h5>
+                <p class="text-secondary">Your personal trainer has assigned you the <strong>Full Body Strength & Conditioning</strong> program.</p>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4"><div class="p-3 border border-secondary rounded"><h6>Monday</h6><p class="small text-secondary mb-0">Chest & Triceps Focus</p></div></div>
+                    <div class="col-md-4"><div class="p-3 border border-secondary rounded"><h6>Wednesday</h6><p class="small text-secondary mb-0">Back & Biceps Focus</p></div></div>
+                    <div class="col-md-4"><div class="p-3 border border-secondary rounded"><h6>Friday</h6><p class="small text-secondary mb-0">Legs & Core Focus</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: ATTENDANCE ================= -->
+        <div class="portal-tab" id="tab-attendance">
+            <div class="glass-panel p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-calendar-check me-2 text-success"></i>Daily Attendance Logger</h5>
+                <div class="d-flex align-items-center justify-content-between p-3 rounded bg-dark border border-secondary mb-4">
+                    <div><h6 class="mb-1 text-white">Daily Gym Center Entrance</h6><p class="small text-secondary mb-0">Check in upon arrival at the facility</p></div>
+                    <button class="btn btn-success fw-bold" onclick="alert('Attendance Checked In Successfully!')">Check In Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: PAYMENTS ================= -->
+        <div class="portal-tab" id="tab-payments">
+            <div class="glass-panel p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-credit-card me-2 text-warning"></i>Subscription & Payment History</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead><tr><th>Invoice ID</th><th>Date</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>INV-2026-001</td><td>2026-07-01</td><td>Monthly Basic</td><td>$49.99</td><td><span class="badge bg-success">PAID</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: BMI CALCULATOR ================= -->
+        <div class="portal-tab" id="tab-bmi">
+            <div class="glass-panel p-4" style="max-width:600px;">
+                <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-info"></i>BMI Calculator</h5>
+                <div class="mb-3"><label class="form-label text-secondary">Height (cm)</label><input type="number" id="bmi-height" class="form-control bg-dark text-white border-secondary" value="175"></div>
+                <div class="mb-3"><label class="form-label text-secondary">Weight (kg)</label><input type="number" id="bmi-weight" class="form-control bg-dark text-white border-secondary" value="70"></div>
+                <button class="btn btn-primary w-100 fw-bold" onclick="calcBMI()">Calculate BMI</button>
+                <div class="mt-4 p-3 rounded bg-dark border border-secondary text-center d-none" id="bmi-result-box">
+                    <span class="text-secondary small">Your BMI Result</span>
+                    <h3 class="fw-bold text-white my-1" id="bmi-score">22.9</h3>
+                    <span class="badge bg-success fs-6" id="bmi-category">Normal Weight</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 7: PROFILE ================= -->
+        <div class="portal-tab" id="tab-profile">
+            <div class="glass-panel p-4" style="max-width:700px;">
+                <h5 class="fw-bold mb-3"><i class="fas fa-user me-2 text-primary"></i>Member Profile Details</h5>
+                <div class="row g-3">
+                    <div class="col-md-6"><label class="text-secondary small">Full Name</label><p class="fw-bold text-white">Alice Smith</p></div>
+                    <div class="col-md-6"><label class="text-secondary small">Email</label><p class="fw-bold text-white">alice@member.com</p></div>
+                    <div class="col-md-6"><label class="text-secondary small">Emergency Contact</label><p class="fw-bold text-white">Bob Smith (9876543219)</p></div>
+                    <div class="col-md-6"><label class="text-secondary small">Assigned Trainer</label><p class="fw-bold text-white">John Doe</p></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function switchTab(tabId) {
+    document.querySelectorAll('.portal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-menu li').forEach(l => l.classList.remove('active'));
+    
+    document.getElementById('tab-' + tabId).classList.add('active');
+    document.getElementById('nav-' + tabId).classList.add('active');
+
+    const titles = {
+        overview: 'Overview Dashboard',
+        guide: 'Workout Guide',
+        workout: 'My Workout Routine',
+        attendance: 'Attendance Log',
+        payments: 'Subscription Payments',
+        bmi: 'BMI Calculator',
+        profile: 'My Profile'
+    };
+    document.getElementById('page-title-text').innerHTML = '<i class="fas fa-layer-group me-2" style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>' + (titles[tabId] || 'Member Portal');
+}
+
+function toggleCard(card) { card.classList.toggle('expanded'); }
+
+let pTimerInterval = null, pTimerRunning = false, pTimerSecs = 0;
+function portalTimerToggle() {
+    if (pTimerRunning) {
+        clearInterval(pTimerInterval); pTimerRunning = false;
+        document.getElementById('portal-timer-icon').className = 'fas fa-play';
+    } else {
+        pTimerRunning = true;
+        document.getElementById('portal-timer-icon').className = 'fas fa-pause';
+        pTimerInterval = setInterval(() => {
+            pTimerSecs++;
+            const m = String(Math.floor(pTimerSecs / 60)).padStart(2,'0');
+            const s = String(pTimerSecs % 60).padStart(2,'0');
+            document.getElementById('portal-timer-display').textContent = m + ':' + s;
+        }, 1000);
+    }
+}
+function portalTimerReset() {
+    clearInterval(pTimerInterval); pTimerRunning = false; pTimerSecs = 0;
+    document.getElementById('portal-timer-icon').className = 'fas fa-play';
+    document.getElementById('portal-timer-display').textContent = '00:00';
+}
+
+let pWater = 500;
+function portalAddWater(ml) {
+    pWater = Math.min(2000, pWater + ml);
+    const pct = Math.round((pWater / 2000) * 100);
+    document.getElementById('portal-water-text').textContent = pWater + ' ml / 2,000 ml';
+    document.getElementById('portal-water-fill').style.width = pct + '%';
+}
+
+function calcBMI() {
+    const h = parseFloat(document.getElementById('bmi-height').value) / 100;
+    const w = parseFloat(document.getElementById('bmi-weight').value);
+    if (!h || !w) return;
+    const bmi = (w / (h * h)).toFixed(1);
+    document.getElementById('bmi-score').textContent = bmi;
+    const cat = document.getElementById('bmi-category');
+    if (bmi < 18.5) { cat.textContent = 'Underweight'; cat.className = 'badge bg-warning text-dark'; }
+    else if (bmi < 25) { cat.textContent = 'Normal Weight'; cat.className = 'badge bg-success'; }
+    else { cat.textContent = 'Overweight'; cat.className = 'badge bg-danger'; }
+    document.getElementById('bmi-result-box').classList.remove('d-none');
+}
+
+function logout() { localStorage.removeItem('jwtToken'); localStorage.removeItem('userRole'); window.location.href = '/login.html'; }
+</script>
+</body>
+</html>

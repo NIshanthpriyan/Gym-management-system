@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Classes Scheduling - Admin Portal</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/admin/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/admin/members.html"><i class="fas fa-users"></i>Members</a></li>
+            <li><a href="/admin/trainers.html"><i class="fas fa-user-ninja"></i>Trainers</a></li>
+            <li><a href="/admin/plans.html"><i class="fas fa-gem"></i>Membership Plans</a></li>
+            <li><a href="/admin/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li class="active"><a href="/admin/classes-management.html"><i class="fas fa-calendar-alt"></i>Group Classes</a></li>
+            <li><a href="/admin/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/admin/reports.html"><i class="fas fa-chart-bar"></i>Reports</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">🗓️ Group Fitness Class Scheduler</h4>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-class"><i class="fas fa-plus me-1"></i>Schedule New Class</button>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            <div class="glass-panel p-4 mb-4">
+                <h5 class="fw-bold mb-3">All Scheduled Fitness Classes</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Class Name</th>
+                                <th>Date & Time</th>
+                                <th>Location / Room</th>
+                                <th>Trainer</th>
+                                <th>Booked Slots</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classes-table-body">
+                            <tr><td colspan="6" class="text-center text-secondary">Loading classes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Schedule Class -->
+    <div class="modal fade" id="modal-class" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold">Schedule Group Fitness Class</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-class">
+                        <div class="mb-3">
+                            <label class="form-label">Class Name</label>
+                            <input type="text" id="input-class-name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Power Yoga, Morning HIIT" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Assigned Trainer</label>
+                            <select id="select-trainer" class="form-select bg-dark text-white border-secondary"></select>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Schedule Time</label>
+                                <input type="datetime-local" id="input-time" class="form-control bg-dark text-white border-secondary" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Room / Studio</label>
+                                <input type="text" id="input-room" class="form-control bg-dark text-white border-secondary" value="Studio A" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Max Capacity (Slots)</label>
+                            <input type="number" id="input-capacity" class="form-control bg-dark text-white border-secondary" value="20" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea id="input-desc" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="Full body strength and endurance training session."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Schedule Class</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_ADMIN', 'ROLE_TRAINER');
+        loadNavbarProfile();
+
+        async function loadClasses() {
+            try {
+                // Fetch trainers
+                const tRes = await fetchWithAuth('/trainers');
+                const trainers = await tRes.json();
+                const sel = document.getElementById('select-trainer');
+                sel.innerHTML = `<option value="">-- Unassigned --</option>` + trainers.map(t => `<option value="${t.id}">${t.user.fullName} (${t.specialization})</option>`).join('');
+
+                // Fetch classes
+                const cRes = await fetchWithAuth('/classes');
+                const classes = await cRes.json();
+                const tbody = document.getElementById('classes-table-body');
+
+                if (classes.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary">No classes scheduled yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = classes.map(c => `
+                    <tr>
+                        <td class="fw-bold text-accent">${c.className}</td>
+                        <td>${new Date(c.scheduleTime).toLocaleString()}</td>
+                        <td>${c.room}</td>
+                        <td>${c.trainer ? c.trainer.user.fullName : 'Staff'}</td>
+                        <td><span class="badge bg-info">${c.bookedCount} / ${c.capacity}</span></td>
+                        <td><span class="badge bg-success">${c.status}</span></td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('form-class').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const timeVal = document.getElementById('input-time').value; // e.g. "2026-07-25T10:00"
+            const formattedTime = timeVal.length === 16 ? timeVal + ":00" : timeVal;
+
+            const payload = {
+                className: document.getElementById('input-class-name').value,
+                trainerId: document.getElementById('select-trainer').value,
+                scheduleTime: formattedTime,
+                room: document.getElementById('input-room').value,
+                capacity: document.getElementById('input-capacity').value,
+                description: document.getElementById('input-desc').value
+            };
+
+            try {
+                const res = await fetchWithAuth('/classes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res && res.ok) {
+                    showToast('Class scheduled successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('modal-class')).hide();
+                    loadClasses();
+                } else {
+                    showToast('Failed to schedule class', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', loadClasses);
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workout Routine - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li class="active"><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">My Workout Program</h4>
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary small">Signed in as:</span>
+                <span id="nav-profile-username" class="fw-bold">Member</span>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            
+            <!-- Plan Header Info -->
+            <div class="glass-panel p-4 mb-4 animate-fade-in">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 id="plan-title" class="fw-bold mb-1">No Assigned Workout Plan</h4>
+                        <p id="plan-desc" class="text-secondary small m-0">A fitness routine has not been assigned to your account yet.</p>
+                    </div>
+                    <div class="text-end">
+                        <span id="plan-weeks" class="badge bg-primary px-3 py-2 fs-6">0 Weeks</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exercises Grouped by Days -->
+            <div class="row g-4" id="days-container">
+                <!-- Loaded dynamically -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_MEMBER');
+        loadNavbarProfile();
+
+        const memberId = getProfileId();
+
+        async function loadWorkoutPlan() {
+            const container = document.getElementById('days-container');
+            container.innerHTML = `<div class="col-12 text-center py-5 text-secondary"><i class="fas fa-spinner fa-spin me-2"></i>Loading workout plan...</div>`;
+
+            try {
+                const response = await fetchWithAuth(`/member/${memberId}/workout-plan`);
+                
+                if (response && response.status === 404) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-5 text-secondary">
+                            <i class="fas fa-running fs-1 mb-3 text-muted d-block"></i>
+                            <h5 class="fw-bold">No Active Routines</h5>
+                            <p class="small text-secondary">Contact the gym staff to assign your bodybuilding or fat loss program.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (!response) return;
+                const plan = await response.json();
+
+                // Set headers
+                document.getElementById('plan-title').textContent = plan.planName;
+                document.getElementById('plan-desc').textContent = plan.description;
+                document.getElementById('plan-weeks').textContent = `${plan.durationWeeks} Weeks`;
+
+                // Group exercises by dayOfWeek
+                const exercisesByDay = {};
+                plan.exercises.forEach(ex => {
+                    if (!exercisesByDay[ex.dayOfWeek]) {
+                        exercisesByDay[ex.dayOfWeek] = [];
+                    }
+                    exercisesByDay[ex.dayOfWeek].push(ex);
+                });
+
+                const daysOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                const sortedDays = Object.keys(exercisesByDay).sort((a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b));
+
+                container.innerHTML = sortedDays.map((day, idx) => {
+                    const exercises = exercisesByDay[day];
+                    return `
+                        <div class="col-12 animate-fade-in" style="animation-delay: ${idx * 0.05}s;">
+                            <div class="glass-panel p-4">
+                                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                                    <h5 class="fw-bold m-0 text-accent"><i class="far fa-calendar-alt me-2"></i>${day}</h5>
+                                    <span class="badge bg-secondary">${exercises.length} Exercises</span>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table custom-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Exercise Name</th>
+                                                <th>Sets</th>
+                                                <th>Reps</th>
+                                                <th>Target Weight</th>
+                                                <th>Instructions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${exercises.map(e => `
+                                                <tr>
+                                                    <td class="fw-bold"><i class="fas fa-dumbbell text-secondary me-2"></i>${e.exerciseName}</td>
+                                                    <td><span class="badge bg-dark text-white border-1">${e.sets} Sets</span></td>
+                                                    <td><span class="badge bg-dark text-white border-1">${e.reps} Reps</span></td>
+                                                    <td><strong>${e.weightLbs > 0 ? e.weightLbs + ' lbs' : 'Bodyweight'}</strong></td>
+                                                    <td class="text-secondary small">${e.notes || 'Focus on slow negative movements.'}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="col-12 text-center py-5 text-danger">Failed to retrieve workout plan details.</div>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadWorkoutPlan);
+    </script>
+</body>
+</html>

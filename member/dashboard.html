@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Gym Fit</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot-widget.css">
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-dumbbell"></i>
+            <span>GYM FIT</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="/member/dashboard.html"><i class="fas fa-th-large"></i>Dashboard</a></li>
+            <li><a href="/member/profile.html"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="/member/workout.html"><i class="fas fa-running"></i>Workout Plan</a></li>
+            <li><a href="/member/workout-guide.html"><i class="fas fa-book-open"></i>Workout Guide</a></li>
+            <li><a href="/member/diet.html"><i class="fas fa-utensils"></i>Diet Plan</a></li>
+            <li><a href="/member/classes.html"><i class="fas fa-users"></i>Group Classes</a></li>
+            <li><a href="/member/attendance.html"><i class="fas fa-calendar-check"></i>Attendance</a></li>
+            <li><a href="/member/payments.html"><i class="fas fa-credit-card"></i>Payments</a></li>
+            <li><a href="/member/bmi.html"><i class="fas fa-calculator"></i>BMI Calculator</a></li>
+            <li><a href="/member/chatbot.html"><i class="fas fa-robot"></i>AI Gym Assistant</a></li>
+            <li class="mt-auto"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <div class="navbar-top">
+            <h4 class="m-0 fw-bold">Member Dashboard</h4>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-secondary small">Welcome, <strong id="nav-profile-username" class="text-white">Member</strong></span>
+            </div>
+        </div>
+
+        <!-- Content Body -->
+        <div class="content-body text-start">
+            
+            <!-- Welcome Expire Warning -->
+            <div id="expiry-warning-banner" class="alert alert-warning border-0 glass-panel mb-4 d-none animate-fade-in" role="alert" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3) !important;">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Your subscription is expiring soon! Renew now to continue training.</span>
+                    <a href="/member/payments.html" class="btn btn-warning btn-sm fw-bold">Renew Subscription</a>
+                </div>
+            </div>
+
+            <!-- Attendance checkin logger card -->
+            <div class="glass-panel p-4 mb-4 animate-fade-in">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="fw-bold mb-1">Online Daily Entrance Check-In</h5>
+                        <p class="text-secondary small m-0">Click below to check in when you arrive at the gym center or show your Digital QR Pass.</p>
+                    </div>
+                    <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex align-items-center justify-md-content-end gap-2">
+                        <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-qr-pass"><i class="fas fa-qrcode me-1"></i>My QR Pass</button>
+                        <span id="attendance-status-text" class="text-secondary small">Checking status...</span>
+                        <button id="btn-attendance-action" class="btn btn-primary btn-sm">Check In Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: QR Pass -->
+            <div class="modal fade" id="modal-qr-pass" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white border-secondary text-center">
+                        <div class="modal-header border-secondary">
+                            <h5 class="modal-title fw-bold"><i class="fas fa-id-card me-2 text-success"></i>Digital Gym Entry Pass</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="bg-white p-3 d-inline-block rounded mb-3 shadow">
+                                <img id="qr-pass-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=GYM-MEMBER-1" alt="QR Pass" class="img-fluid">
+                            </div>
+                            <h5 class="fw-bold text-accent mb-1" id="qr-member-name">Member Pass</h5>
+                            <p class="text-secondary small mb-0">QR Pass Code: <strong id="qr-code-text" class="text-success">GYM-MEMBER-1</strong></p>
+                            <small class="text-muted d-block mt-2">Show this QR Code at the gym entrance scanner for auto check-in.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Gym Assistant Banner -->
+            <div class="glass-panel p-4 mb-4 animate-fade-in" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(14, 165, 233, 0.12)); border-color: rgba(99, 102, 241, 0.3);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-success text-white" style="font-size:11px;padding:4px 8px;"><i class="fas fa-sparkles me-1"></i>AI POWERED</span>
+                            <h5 class="fw-bold mb-0 text-white">Ask Your AI Virtual Gym Assistant</h5>
+                        </div>
+                        <p class="text-secondary small m-0">Need immediate answers about your membership expiry, attendance streak, workout splits, high-protein diets, or exercise forms? Chat with our AI bot anytime!</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/member/chatbot.html" class="btn btn-primary fw-semibold"><i class="fas fa-robot me-2"></i>Launch AI Assistant</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beginner Gym Guide Banner -->
+            <div class="glass-panel p-4 mb-4 animate-fade-in" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(168, 85, 247, 0.08)); border-color: rgba(14, 165, 233, 0.2);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-primary text-white" style="font-size:11px;padding:4px 8px;">NEW</span>
+                            <h5 class="fw-bold mb-0">Beginner Gym Guide & Workout Tips</h5>
+                        </div>
+                        <p class="text-secondary small m-0">New to the gym? Learn warm-up routines, dynamic stretching, full-body exercises, correct form tips, and cool down steps.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/member/workout-guide.html" class="btn btn-primary fw-semibold"><i class="fas fa-book-open me-2"></i>Open Workout Guide</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard cards -->
+            <div class="row g-4 mb-4">
+                
+                <!-- Card 1: Subscription Status -->
+                <div class="col-md-6 col-lg-4 animate-fade-in">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Membership Plan</h3>
+                            <h2 id="card-plan-name" class="fs-4 mt-2 mb-1">Loading...</h2>
+                            <span id="card-plan-status" class="badge-active">ACTIVE</span>
+                        </div>
+                        <div class="metric-icon bg-blue-accent">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Expiry Date -->
+                <div class="col-md-6 col-lg-4 animate-fade-in" style="animation-delay: 0.05s;">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Expiry Date</h3>
+                            <h2 id="card-plan-expiry" class="fs-4 mt-2">Loading...</h2>
+                        </div>
+                        <div class="metric-icon bg-purple-accent">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Attendance Summary -->
+                <div class="col-md-6 col-lg-4 animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-info">
+                            <h3>Workout Days</h3>
+                            <h2 id="card-attendance-count" class="fs-2 mt-2">0</h2>
+                        </div>
+                        <div class="metric-icon bg-teal-accent">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Workout Plan Shortcut & Progress Summary -->
+            <div class="row g-4">
+                
+                <div class="col-lg-6 animate-fade-in">
+                    <div class="glass-panel p-4 h-100">
+                        <h5 class="fw-bold mb-4">Assigned Workout Plan Preview</h5>
+                        <div id="workout-plan-preview">
+                            <p class="text-secondary small">Fetching workout assignments...</p>
+                        </div>
+                        <a href="/member/workout.html" class="btn btn-outline-secondary btn-sm mt-3">Full Workout Checklist</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 animate-fade-in" style="animation-delay: 0.05s;">
+                    <div class="glass-panel p-4 h-100">
+                        <h5 class="fw-bold mb-4">Recent Progress Log</h5>
+                        <div id="progress-preview">
+                            <p class="text-secondary small">No physical metrics logged yet.</p>
+                        </div>
+                        <a href="/member/bmi.html" class="btn btn-outline-secondary btn-sm mt-3">Log Physical Metrics</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core security scripts -->
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth('ROLE_MEMBER');
+        loadNavbarProfile();
+
+        const memberId = getProfileId();
+        const userId = getUserId();
+
+        async function loadDashboardDetails() {
+            try {
+                // Fetch Member Profile
+                const profileRes = await fetchWithAuth(`/member/${memberId}`);
+                if (!profileRes) return;
+                const m = await profileRes.json();
+
+                document.getElementById('card-plan-name').textContent = m.membershipPlanName || 'No Plan';
+                document.getElementById('card-plan-expiry').textContent = m.membershipExpiryDate ? new Date(m.membershipExpiryDate).toLocaleDateString() : 'N/A';
+                
+                const planStatus = document.getElementById('card-plan-status');
+                planStatus.textContent = m.status;
+                if (m.status !== 'ACTIVE') {
+                    planStatus.className = 'badge-inactive';
+                }
+
+                // QR Pass setup
+                const qrData = `GYM-MEMBER-${m.id}`;
+                document.getElementById('qr-pass-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${qrData}`;
+                document.getElementById('qr-code-text').textContent = qrData;
+                document.getElementById('qr-member-name').textContent = m.fullName || 'Member Pass';
+
+                // Check Expiry (within 3 days warning)
+                if (m.membershipExpiryDate) {
+                    const expiry = new Date(m.membershipExpiryDate);
+                    const diffDays = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
+                    if (diffDays >= 0 && diffDays <= 3) {
+                        document.getElementById('expiry-warning-banner').classList.remove('d-none');
+                    }
+                }
+
+                // Fetch Attendance Count
+                const attRes = await fetchWithAuth('/attendance/history');
+                const attHistory = await attRes.json();
+                document.getElementById('card-attendance-count').textContent = attHistory.length;
+
+                // Load Workout Plan Preview
+                const workoutRes = await fetchWithAuth(`/member/${memberId}/workout-plan`);
+                if (workoutRes && workoutRes.ok) {
+                    const plan = await workoutRes.json();
+                    document.getElementById('workout-plan-preview').innerHTML = `
+                        <h6 class="fw-bold text-accent mb-1">${plan.planName}</h6>
+                        <p class="text-secondary small mb-3">${plan.description}</p>
+                        <ul class="list-group list-group-flush bg-transparent text-white small">
+                            ${plan.exercises.slice(0, 3).map(e => `
+                                <li class="list-group-item bg-transparent text-white border-secondary ps-0">
+                                    <i class="fas fa-check text-success me-2"></i>${e.exerciseName} - ${e.sets}x${e.reps} (${e.dayOfWeek})
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                } else {
+                    document.getElementById('workout-plan-preview').innerHTML = `<p class="text-secondary small">No workout routine assigned yet.</p>`;
+                }
+
+                // Load Progress Preview
+                const progressRes = await fetchWithAuth(`/member/${memberId}/progress`);
+                const progList = await progressRes.json();
+                if (progList.length > 0) {
+                    const latest = progList[progList.length - 1];
+                    document.getElementById('progress-preview').innerHTML = `
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="bg-dark p-2 rounded">
+                                    <span class="d-block text-secondary small">Weight</span>
+                                    <strong class="text-white">${latest.weight} kg</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-dark p-2 rounded">
+                                    <span class="d-block text-secondary small">Height</span>
+                                    <strong class="text-white">${latest.height} m</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="bg-dark p-2 rounded">
+                                    <span class="d-block text-secondary small">BMI</span>
+                                    <strong class="text-accent">${latest.bmi}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mt-3 mb-0">Recorded Date: ${new Date(latest.recordedDate).toLocaleDateString()}</p>
+                    `;
+                } else {
+                    document.getElementById('progress-preview').innerHTML = `<p class="text-secondary small">No logs created. Check your BMI in the calculator pane.</p>`;
+                }
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Attendance Status check
+        async function checkAttendanceStatus() {
+            try {
+                const response = await fetchWithAuth('/attendance/status');
+                const a = await response.json();
+
+                const statusText = document.getElementById('attendance-status-text');
+                const actionBtn = document.getElementById('btn-attendance-action');
+
+                if (a && a.checkInTime && !a.checkOutTime) {
+                    statusText.textContent = `Checked-in today at ${a.checkInTime.substring(0,5)}`;
+                    actionBtn.textContent = 'Check Out';
+                    actionBtn.className = 'btn btn-outline-danger';
+                    actionBtn.onclick = performCheckOut;
+                } else if (a && a.checkInTime && a.checkOutTime) {
+                    statusText.textContent = `Checked-out today at ${a.checkOutTime.substring(0,5)}`;
+                    actionBtn.textContent = 'Done For Today';
+                    actionBtn.className = 'btn btn-secondary disabled';
+                    actionBtn.disabled = true;
+                } else {
+                    statusText.textContent = 'You have not checked-in today.';
+                    actionBtn.textContent = 'Check In Now';
+                    actionBtn.className = 'btn btn-primary';
+                    actionBtn.onclick = performCheckIn;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function performCheckIn() {
+            try {
+                const response = await fetchWithAuth('/attendance/check-in', { method: 'POST' });
+                if (response && response.ok) {
+                    showToast('Successfully checked in!', 'success');
+                    checkAttendanceStatus();
+                    loadDashboardDetails();
+                } else {
+                    showToast('Check-in failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function performCheckOut() {
+            try {
+                const response = await fetchWithAuth('/attendance/check-out', { method: 'POST' });
+                if (response && response.ok) {
+                    showToast('Successfully checked out!', 'success');
+                    checkAttendanceStatus();
+                    loadDashboardDetails();
+                } else {
+                    showToast('Check-out failed.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardDetails();
+            checkAttendanceStatus();
+        });
+    </script>
+    <!-- AI Gym Assistant Floating Widget -->
+    <script src="/js/chatbot-widget.js"></script>
+</body>
+</html>
