@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gymGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#gymGrad)" />
+  <!-- Dumbbell Icon -->
+  <g fill="#ffffff" transform="translate(106, 156) scale(0.6)">
+    <path d="M104 96H56C25.07 96 0 121.07 0 152v192c0 30.93 25.07 56 56 56h48c30.93 0 56-25.07 56-56v-40h192v40c0 30.93 25.07 56 56 56h48c30.93 0 56-25.07 56-56V152c0-30.93-25.07-56-56-56h-48c-30.93 0-56 25.07-56 56v40H160v-40c0-30.93-25.07-56-56-56zm-16 256H56c-8.84 0-16-7.16-16-16V152c0-8.84 7.16-16 16-16h32c8.84 0 16 7.16 16 16v184c0 8.84-7.16 16-16 16zm384 0h-32c-8.84 0-16-7.16-16-16V152c0-8.84 7.16-16 16-16h32c8.84 0 16 7.16 16 16v184c0 8.84-7.16 16-16 16z"/>
+  </g>
+</svg>
